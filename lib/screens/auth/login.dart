@@ -247,11 +247,21 @@ class _LoginScreenState extends State<LoginScreen>
                       ),
                     ),
                   ),
-                  MyMaterialButton(
-                    text: 'Login',
-                    onPressed: _submitFormLogin,
-                    icon: Icons.login,
-                  ).py(50),
+                  _isLoading
+                      ? Center(
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator(
+                              color: pink[700]!,
+                            ),
+                          ),
+                        )
+                      : MyMaterialButton(
+                          text: 'Login',
+                          onPressed: _submitFormLogin,
+                          icon: Icons.login,
+                        ).py(50),
                 ],
               ),
             ),
