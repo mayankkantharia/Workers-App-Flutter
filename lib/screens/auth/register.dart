@@ -1,11 +1,14 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/screens/auth/login.dart';
+import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:image_picker/image_picker.dart';
@@ -26,17 +29,20 @@ class _RegisterScreenState extends State<RegisterScreen>
   final TextEditingController _passwordTextController = TextEditingController();
   final TextEditingController _positionTextController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
-  final _signUpFormKey = GlobalKey<FormState>();
 
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _positionFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
+  final _signUpFormKey = GlobalKey<FormState>();
 
   File? imageFile;
-
   bool _obscureText = true;
+  bool _isLoading = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   void initState() {
     _animationController = AnimationController(
@@ -85,7 +91,29 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   void _submitFormSignUp() async {
     final isValid = _signUpFormKey.currentState!.validate();
-    if (isValid) {}
+    if (isValid) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await _auth.createUserWithEmailAndPassword(
+          email: _emailTextController.text.trim().toLowerCase(),
+          password: _passwordTextController.text,
+        );
+        Navigator.canPop(context) ? Navigator.pop(context) : null;
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalMethods.showErrorDialog(
+          error: error.toString(),
+          context: context,
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -97,13 +125,9 @@ class _RegisterScreenState extends State<RegisterScreen>
           CachedNetworkImage(
             imageUrl:
                 "https://media.istockphoto.com/photos/businesswoman-using-computer-in-dark-office-picture-id557608443?k=6&m=557608443&s=612x612&w=0&h=fWWESl6nk7T6ufo4sRjRBSeSiaiVYAzVrY-CLlfMptM=",
-            // placeholder: (context, url) => Image.asset(
-            //   'assets/images/wallpaper.jpg',
-            //   fit: BoxFit.fill,
-            // ),
-            placeholder: (context, url) => CircularProgressIndicator(
-              color: pink[700],
-            ),
+            placeholder: (context, url) => SpinKitDualRing(
+              color: pink[700]!,
+            ).centered(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             width: double.infinity,
             height: double.infinity,
@@ -360,11 +384,21 @@ class _RegisterScreenState extends State<RegisterScreen>
                       ],
                     ),
                   ),
-                  MyMaterialButton(
-                    text: 'SignUp',
-                    onPressed: _submitFormSignUp,
-                    icon: Icons.person_add,
-                  ).py(40),
+                  _isLoading
+                      ? Center(
+                          child: SizedBox(
+                            height: 50,
+                            width: 50,
+                            child: CircularProgressIndicator(
+                              color: pink[700]!,
+                            ),
+                          ),
+                        )
+                      : MyMaterialButton(
+                          text: 'SignUp',
+                          onPressed: _submitFormSignUp,
+                          icon: Icons.person_add,
+                        ).py(40),
                 ],
               ),
             ),

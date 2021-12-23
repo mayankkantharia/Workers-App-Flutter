@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:work_app/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -92,6 +93,7 @@ class DrawerWidget extends StatelessWidget {
   }
 
   void _logout(context) {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
     showDialog(
       context: context,
       builder: (context) {
@@ -130,7 +132,10 @@ class DrawerWidget extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                _auth.signOut();
+                Navigator.canPop(context) ? Navigator.pop(context) : null;
+              },
               child: const Text(
                 'Yes',
                 style: myAlertTextButtonTextStyle,

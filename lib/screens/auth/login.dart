@@ -1,11 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/screens/auth/forgot_password.dart';
 import 'package:work_app/screens/auth/register.dart';
+import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -25,6 +28,9 @@ class _LoginScreenState extends State<LoginScreen>
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   bool _obscureText = true;
+  bool _isLoading = false;
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   void initState() {
     _animationController = AnimationController(
@@ -64,7 +70,28 @@ class _LoginScreenState extends State<LoginScreen>
 
   void _submitFormLogin() async {
     final isValid = _loginFormKey.currentState!.validate();
-    if (isValid) {}
+    if (isValid) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await _auth.signInWithEmailAndPassword(
+          email: _emailTextController.text.trim().toLowerCase(),
+          password: _passwordTextController.text,
+        );
+      } catch (error) {
+        setState(() {
+          _isLoading = false;
+        });
+        GlobalMethods.showErrorDialog(
+          error: error.toString(),
+          context: context,
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -77,9 +104,9 @@ class _LoginScreenState extends State<LoginScreen>
           CachedNetworkImage(
             imageUrl:
                 "https://media.istockphoto.com/photos/businesswoman-using-computer-in-dark-office-picture-id557608443?k=6&m=557608443&s=612x612&w=0&h=fWWESl6nk7T6ufo4sRjRBSeSiaiVYAzVrY-CLlfMptM=",
-            placeholder: (context, url) => CircularProgressIndicator(
-              color: pink[700],
-            ),
+            placeholder: (context, url) => SpinKitDualRing(
+              color: pink[700]!,
+            ).centered(),
             errorWidget: (context, url, error) => const Icon(Icons.error),
             width: double.infinity,
             height: double.infinity,
