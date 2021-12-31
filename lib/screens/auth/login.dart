@@ -9,6 +9,7 @@ import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/screens/auth/forgot_password.dart';
 import 'package:work_app/screens/auth/register.dart';
 import 'package:work_app/services/global_methods.dart';
+import 'package:work_app/user_state.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -79,6 +80,7 @@ class _LoginScreenState extends State<LoginScreen>
           email: _emailTextController.text.trim().toLowerCase(),
           password: _passwordTextController.text,
         );
+        navigateWithReplacement(context, const UserState());
       } catch (error) {
         setState(() {
           _isLoading = false;
@@ -255,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen>
                             child: CircularProgressIndicator(
                               color: pink[700]!,
                             ),
-                          ),
+                          ).py(40),
                         )
                       : MyMaterialButton(
                           text: 'Login',

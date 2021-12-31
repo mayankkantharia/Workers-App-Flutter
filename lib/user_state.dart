@@ -1,18 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/constants.dart';
-import 'package:work_app/helpers/screen_navigation.dart';
-import 'package:work_app/screens/auth/forgot_password.dart';
 import 'package:work_app/screens/auth/login.dart';
-import 'package:work_app/screens/auth/register.dart';
 import 'package:work_app/screens/tasks_screen.dart';
-import 'package:work_app/services/global_methods.dart';
-import 'package:work_app/widgets/my_buttons.dart';
-import 'package:animate_do/animate_do.dart';
 
 class UserState extends StatelessWidget {
   const UserState({Key? key}) : super(key: key);

@@ -1,13 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:work_app/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final String userID;
+  const ProfileScreen({
+    Key? key,
+    required this.userID,
+  }) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -15,136 +22,188 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final _titleTextStyle = const TextStyle(
-    fontSize: 20,
+    fontSize: 18,
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.bold,
   );
   final _contentTextStyle = TextStyle(
-    fontSize: 18,
+    fontSize: 15,
     color: blue[900],
     fontStyle: FontStyle.normal,
     fontWeight: FontWeight.bold,
   );
   @override
+  void initState() {
+    super.initState();
+    getUserData();
+  }
+
+  bool _isLoading = false;
+  String phoneNumber = '';
+  String email = '';
+  String name = '';
+  String job = '';
+  String imageUrl = '';
+  String joinedAt = '';
+  bool isSameUser = false;
+  void getUserData() async {
+    _isLoading = true;
+    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(widget.userID)
+        .get();
+    if (userDoc.exists) {
+      setState(() {
+        email = userDoc.get('email');
+        name = userDoc.get('name');
+        job = userDoc.get('positionInCompany');
+        phoneNumber = userDoc.get('phoneNumber');
+        imageUrl = userDoc.get('userImage');
+        Timestamp joinedAtTimeStamp = userDoc.get('createdAt');
+        var joinedDate = joinedAtTimeStamp.toDate();
+        joinedAt = '${joinedDate.year}-${joinedDate.month}-${joinedDate.day}';
+        _isLoading = false;
+      });
+      _isLoading = false;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const DrawerWidget(),
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: darkBlue),
-        backgroundColor: ghostWhite,
-        title: const Text(
-          'Profile',
-          style: myHeadingTextStyle,
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-            children: [
-              Card(
-                elevation: 5,
-                margin: const EdgeInsets.all(30),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return _isLoading
+        ? Scaffold(
+            backgroundColor: ghostWhite,
+            body: SpinKitDualRing(
+              color: pink[700]!,
+            ).centered(),
+          )
+        : Scaffold(
+            drawer: const DrawerWidget(),
+            appBar: AppBar(
+              elevation: 0,
+              centerTitle: true,
+              iconTheme: const IconThemeData(color: darkBlue),
+              backgroundColor: ghostWhite,
+              title: const Text(
+                'Profile',
+                style: myHeadingTextStyle,
+              ),
+            ),
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: Stack(
                   children: [
-                    60.heightBox,
-                    Text(
-                      'Name',
-                      style: _titleTextStyle,
-                    ).centered(),
-                    10.heightBox,
-                    Text(
-                      'Job joined date 2021-8-10',
-                      style: _contentTextStyle,
-                    ).centered(),
-                    15.heightBox,
-                    const Divider(thickness: 1),
-                    20.heightBox,
-                    Text(
-                      'Contact Info',
-                      style: _titleTextStyle,
-                    ).pSymmetric(h: 4),
-                    15.heightBox,
-                    userInfo(title: 'Email:', content: 'email@gmail.com').p(4),
-                    userInfo(title: 'Phone Number:', content: '48594758').p(4),
-                    15.heightBox,
-                    const Divider(thickness: 1),
+                    Card(
+                      elevation: 5,
+                      margin: const EdgeInsets.all(30),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          60.heightBox,
+                          Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontStyle: FontStyle.normal,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ).centered(),
+                          10.heightBox,
+                          Text(
+                            '$job since $joinedAt',
+                            style: _contentTextStyle,
+                          ).centered(),
+                          15.heightBox,
+                          const Divider(thickness: 1),
+                          20.heightBox,
+                          Text(
+                            'Contact Info',
+                            style: _titleTextStyle,
+                          ).pSymmetric(h: 4),
+                          15.heightBox,
+                          userInfo(title: 'Email:', content: email).p(4),
+                          userInfo(title: 'Phone Number:', content: phoneNumber)
+                              .p(4),
+                          15.heightBox,
+                          const Divider(thickness: 1),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _contactBy(
+                                color: green,
+                                icon: FontAwesomeIcons.whatsapp,
+                                onPressed: () {
+                                  _openWhatsappChat();
+                                },
+                              ),
+                              _contactBy(
+                                color: red,
+                                icon: Icons.email,
+                                onPressed: () {
+                                  _mailTo();
+                                },
+                              ),
+                              _contactBy(
+                                color: purple,
+                                icon: Icons.call_outlined,
+                                onPressed: () {
+                                  _callPhoneNumber();
+                                },
+                              ),
+                            ],
+                          ).pSymmetric(v: 15),
+                          const Divider(
+                            thickness: 1,
+                          ),
+                          15.heightBox,
+                          MyMaterialButton(
+                            text: 'Logout',
+                            icon: FontAwesomeIcons.signOutAlt,
+                            onPressed: () {
+                              GlobalMethods.logout(context);
+                            },
+                            mainAxisSize: MainAxisSize.min,
+                          ).centered(),
+                          6.heightBox,
+                        ],
+                      ).p(15),
+                    ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _contactBy(
-                          color: green,
-                          icon: FontAwesomeIcons.whatsapp,
-                          onPressed: () {
-                            _openWhatsappChat();
-                          },
-                        ),
-                        _contactBy(
-                          color: red,
-                          icon: Icons.email,
-                          onPressed: () {
-                            _mailTo();
-                          },
-                        ),
-                        _contactBy(
-                          color: purple,
-                          icon: Icons.call_outlined,
-                          onPressed: () {
-                            _callPhoneNumber();
-                          },
-                        ),
+                        Container(
+                          width: 90,
+                          height: 90,
+                          decoration: BoxDecoration(
+                            color: red,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              width: 8,
+                              color: ghostWhite,
+                            ),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                imageUrl == "" || imageUrl.isEmptyOrNull
+                                    ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
+                                    : imageUrl,
+                              ),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        )
                       ],
-                    ).pSymmetric(v: 15),
-                    const Divider(
-                      thickness: 1,
                     ),
-                    15.heightBox,
-                    MyMaterialButton(
-                      text: 'Logout',
-                      icon: FontAwesomeIcons.signOutAlt,
-                      onPressed: () {},
-                      mainAxisSize: MainAxisSize.min,
-                    ).centered(),
-                    6.heightBox,
                   ],
-                ).p(15),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 90,
-                    height: 90,
-                    decoration: BoxDecoration(
-                      color: red,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        width: 8,
-                        color: ghostWhite,
-                      ),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                            'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'),
-                        fit: BoxFit.fill,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ).centered(),
-      ),
-    );
+                ),
+              ).centered(),
+            ),
+          );
   }
 
   void _openWhatsappChat() async {
-    String phoneNumber = '+919769445870';
     var url = 'https://wa.me/$phoneNumber?text=HelloWorld';
     if (await canLaunch(url)) {
       await launch(url);
@@ -154,7 +213,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _mailTo() async {
-    String email = 'mayankkantharia1@gmail.com';
     var mailUrl = 'mailto:$email';
     if (await canLaunch(mailUrl)) {
       await launch(mailUrl);
@@ -164,7 +222,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _callPhoneNumber() async {
-    String phoneNumber = '+919769445870';
     var phoneUrl = 'tel://$phoneNumber';
     if (await canLaunch(phoneUrl)) {
       await launch(phoneUrl);
@@ -181,9 +238,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
           style: _titleTextStyle,
         ),
         10.widthBox,
-        Text(
-          content,
-          style: _contentTextStyle,
+        Flexible(
+          child: Text(
+            content,
+            style: _contentTextStyle,
+          ),
         )
       ],
     );

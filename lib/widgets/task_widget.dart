@@ -32,6 +32,9 @@ class _TaskWidgetState extends State<TaskWidget> {
           horizontal: 20,
           vertical: 10,
         ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
         leading: Container(
           padding: const EdgeInsets.only(right: 12),
           decoration: const BoxDecoration(

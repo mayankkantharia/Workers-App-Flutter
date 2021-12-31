@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:work_app/constants.dart';
-import 'package:work_app/screens/auth/login.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';

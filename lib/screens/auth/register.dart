@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import 'package:work_app/widgets/my_buttons.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -40,6 +42,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   File? imageFile;
   bool _obscureText = true;
   bool _isLoading = false;
+  late String imageUrl;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -92,23 +95,50 @@ class _RegisterScreenState extends State<RegisterScreen>
   void _submitFormSignUp() async {
     final isValid = _signUpFormKey.currentState!.validate();
     if (isValid) {
-      setState(() {
-        _isLoading = true;
-      });
-      try {
-        await _auth.createUserWithEmailAndPassword(
-          email: _emailTextController.text.trim().toLowerCase(),
-          password: _passwordTextController.text,
-        );
-        Navigator.canPop(context) ? Navigator.pop(context) : null;
-      } catch (error) {
-        setState(() {
-          _isLoading = false;
-        });
+      if (imageFile == null) {
         GlobalMethods.showErrorDialog(
-          error: error.toString(),
+          error: 'Please pick an Image',
           context: context,
         );
+        return;
+      } else {
+        setState(() {
+          _isLoading = true;
+        });
+        try {
+          await _auth.createUserWithEmailAndPassword(
+            email: _emailTextController.text.trim().toLowerCase(),
+            password: _passwordTextController.text,
+          );
+          final User? user = _auth.currentUser;
+          final _uid = user!.uid;
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('userImages')
+              .child(_uid + '.jpg');
+          await ref.putFile(imageFile!);
+          imageUrl = await ref.getDownloadURL();
+          FirebaseFirestore.instance.collection('users').doc(_uid).set(
+            {
+              'id': _uid,
+              'name': _fullNameTextController.text,
+              'email': _emailTextController.text,
+              'userImage': imageUrl,
+              'phoneNumber': _phoneNumberController.text,
+              'positionInCompany': _positionTextController.text,
+              'createdAt': Timestamp.now(),
+            },
+          );
+          Navigator.canPop(context) ? Navigator.pop(context) : null;
+        } catch (error) {
+          setState(() {
+            _isLoading = false;
+          });
+          GlobalMethods.showErrorDialog(
+            error: error.toString(),
+            context: context,
+          );
+        }
       }
       setState(() {
         _isLoading = false;
@@ -392,7 +422,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                             child: CircularProgressIndicator(
                               color: pink[700]!,
                             ),
-                          ),
+                          ).py(40),
                         )
                       : MyMaterialButton(
                           text: 'SignUp',
