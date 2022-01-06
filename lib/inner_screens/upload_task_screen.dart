@@ -1,8 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:work_app/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
+import 'package:uuid/uuid.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class UploadTaskScreen extends StatefulWidget {
   const UploadTaskScreen({Key? key}) : super(key: key);
@@ -12,6 +17,7 @@ class UploadTaskScreen extends StatefulWidget {
 }
 
 class _UploadTaskScreenState extends State<UploadTaskScreen> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _taskCategoryController = TextEditingController(
     text: 'Choose Task Category',
   );
@@ -23,7 +29,9 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
     text: 'Choose Task Deadline Date',
   );
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
   DateTime? datePicked;
+  Timestamp? _deadlineDateTimeStamp;
   @override
   void dispose() {
     _taskCategoryController.dispose();
@@ -33,11 +41,57 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
     super.dispose();
   }
 
-  void _uploadTask() {
+  void _uploadTask() async {
+    User? user = _auth.currentUser;
+    final _uid = user!.uid;
+    final _taskID = const Uuid().v4();
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
-      // ignore: avoid_print
-      print('is valid'); // print(_emailTextController.text);
+      if (_taskDeadlineDateController.text == 'Choose Task Deadline Date' ||
+          _taskCategoryController.text == 'Choose Task Category') {
+        return GlobalMethods.showErrorDialog(
+          error: 'Please select all details.',
+          context: context,
+        );
+      }
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        await FirebaseFirestore.instance.collection('tasks').doc(_taskID).set(
+          {
+            'taskId': _taskID,
+            'uploadedBy': _uid,
+            'taskTitle': _taskTitleController.text,
+            'taskDescription': _taskDescriptionController.text,
+            'deadlineDate': _taskDeadlineDateController.text,
+            'deadlineDateTimeStamp': _deadlineDateTimeStamp,
+            'taskCategory': _taskCategoryController.text,
+            'taskComments': [],
+            'isDone': false,
+            'createdAt': Timestamp.now(),
+          },
+        );
+        await Fluttertoast.showToast(
+          msg: 'The task has been uploaded.',
+          fontSize: 16.0,
+        );
+        _taskTitleController.clear();
+        _taskDescriptionController.clear();
+        setState(() {
+          _taskCategoryController.text = 'Choose Task Category';
+          _taskDeadlineDateController.text = 'Choose Task Deadline Date';
+        });
+      } catch (error) {
+        GlobalMethods.showErrorDialog(
+          error: error.toString(),
+          context: context,
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     } else {
       // ignore: avoid_print
       print('is not valid');
@@ -69,7 +123,7 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                15.heightBox,
+                14.heightBox,
                 const Text(
                   'All fields are required',
                   style: TextStyle(
@@ -123,16 +177,18 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
                           _pickDateDialog();
                         },
                       ),
-                      MyMaterialButton(
-                        text: 'Upload Task',
-                        onPressed: _uploadTask,
-                        icon: Icons.upload_file,
-                        mainAxisSize: MainAxisSize.min,
-                      ).centered(),
+                      _isLoading
+                          ? const CircularProgressIndicator().centered()
+                          : MyMaterialButton(
+                              text: 'Upload Task',
+                              onPressed: _uploadTask,
+                              icon: Icons.upload_file,
+                              mainAxisSize: MainAxisSize.min,
+                            ).centered(),
                       30.heightBox,
                     ],
                   ),
-                ).pSymmetric(h: 15),
+                ).pSymmetric(h: 12),
               ],
             ),
           ).pSymmetric(h: 10, v: 10),
@@ -209,6 +265,9 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
       setState(() {
         _taskDeadlineDateController.text =
             '${datePicked!.day}-${datePicked!.month}-${datePicked!.year}';
+        _deadlineDateTimeStamp = Timestamp.fromMicrosecondsSinceEpoch(
+          datePicked!.microsecondsSinceEpoch,
+        );
       });
     }
   }

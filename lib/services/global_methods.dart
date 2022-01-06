@@ -1,11 +1,39 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/user_state.dart';
 
 class GlobalMethods {
+  static void mailTo({required email}) async {
+    var mailUrl = 'mailto:$email';
+    if (await canLaunch(mailUrl)) {
+      await launch(mailUrl);
+    } else {
+      throw 'Error Occured';
+    }
+  }
+
+  static void openWhatsappChat({required phoneNumber}) async {
+    var url = 'https://wa.me/$phoneNumber?text=HelloWorld';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Error Occured';
+    }
+  }
+
+  static void callPhoneNumber({required phoneNumber}) async {
+    var phoneUrl = 'tel://$phoneNumber';
+    if (await canLaunch(phoneUrl)) {
+      await launch(phoneUrl);
+    } else {
+      throw 'Error Occured';
+    }
+  }
+
   static void logout(BuildContext context) {
     final FirebaseAuth _auth = FirebaseAuth.instance;
     showDialog(

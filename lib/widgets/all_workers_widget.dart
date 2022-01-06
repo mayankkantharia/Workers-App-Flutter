@@ -1,8 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:work_app/constants.dart';
+import 'package:work_app/helpers/screen_navigation.dart';
+import 'package:work_app/inner_screens/profile_screen.dart';
+import 'package:work_app/services/global_methods.dart';
 
 class AllWorkersWidget extends StatefulWidget {
-  const AllWorkersWidget({Key? key}) : super(key: key);
+  final String userID;
+  final String userName;
+  final String userEmail;
+  final String positionInCompany;
+  final String phoneNumber;
+  final String userImageUrl;
+  const AllWorkersWidget({
+    Key? key,
+    required this.userID,
+    required this.userName,
+    required this.userEmail,
+    required this.positionInCompany,
+    required this.phoneNumber,
+    required this.userImageUrl,
+  }) : super(key: key);
 
   @override
   _AllWorkersWidgetState createState() => _AllWorkersWidgetState();
@@ -19,7 +36,14 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
       ),
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          navigateWithoutReplacement(
+            context,
+            ProfileScreen(
+              userID: widget.userID,
+            ),
+          );
+        },
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 10,
@@ -39,15 +63,23 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
           child: CircleAvatar(
             backgroundColor: transparent,
             radius: 20,
-            child: Image.network(
-                'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.network(
+                // 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png',
+                widget.userImageUrl.isEmpty
+                    ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
+                    : widget.userImageUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
         ),
-        title: const Text(
-          'Worker Name',
+        title: Text(
+          widget.userName,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(
+          style: const TextStyle(
             color: darkBlue,
             fontWeight: FontWeight.bold,
           ),
@@ -60,11 +92,11 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
               Icons.linear_scale,
               color: pink[800],
             ),
-            const Text(
-              'Position/9988774455',
+            Text(
+              '${widget.positionInCompany}/${widget.phoneNumber}',
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.normal,
                 fontSize: 16,
               ),
@@ -77,7 +109,9 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
             size: 30,
             color: pink[800],
           ),
-          onPressed: () {},
+          onPressed: () {
+            GlobalMethods.mailTo(email: widget.userEmail);
+          },
         ),
       ),
     );

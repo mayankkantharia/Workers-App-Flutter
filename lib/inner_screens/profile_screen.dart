@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:work_app/constants.dart';
@@ -7,7 +8,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String userID;
@@ -47,29 +47,92 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String joinedAt = '';
   bool isSameUser = false;
   void getUserData() async {
-    _isLoading = true;
-    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.userID)
-        .get();
-    if (userDoc.exists) {
-      setState(() {
-        email = userDoc.get('email');
-        name = userDoc.get('name');
-        job = userDoc.get('positionInCompany');
-        phoneNumber = userDoc.get('phoneNumber');
-        imageUrl = userDoc.get('userImage');
-        Timestamp joinedAtTimeStamp = userDoc.get('createdAt');
-        var joinedDate = joinedAtTimeStamp.toDate();
-        joinedAt = '${joinedDate.year}-${joinedDate.month}-${joinedDate.day}';
-        _isLoading = false;
-      });
+    try {
+      _isLoading = true;
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.userID)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          email = userDoc.get('email');
+          name = userDoc.get('name');
+          job = userDoc.get('positionInCompany');
+          phoneNumber = userDoc.get('phoneNumber');
+          imageUrl = userDoc.get('userImage');
+          Timestamp joinedAtTimeStamp = userDoc.get('createdAt');
+          var joinedDate = joinedAtTimeStamp.toDate();
+          joinedAt = '${joinedDate.year}-${joinedDate.month}-${joinedDate.day}';
+          _isLoading = false;
+        });
+        User? user = _auth.currentUser;
+        final _uid = user!.uid;
+        setState(() {
+          isSameUser = _uid == widget.userID;
+        });
+      }
+    } catch (error) {
+      return;
+    } finally {
       _isLoading = false;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    Widget _logoutButton() {
+      return Column(
+        children: [
+          MyMaterialButton(
+            text: 'Logout',
+            icon: FontAwesomeIcons.signOutAlt,
+            onPressed: () {
+              GlobalMethods.logout(context);
+            },
+            mainAxisSize: MainAxisSize.min,
+          ).centered(),
+          6.heightBox
+        ],
+      );
+    }
+
+    Widget _contactWidget() {
+      return Column(
+        children: [
+          const Divider(thickness: 1),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _contactBy(
+                color: green,
+                icon: FontAwesomeIcons.whatsapp,
+                onPressed: () {
+                  GlobalMethods.openWhatsappChat(phoneNumber: phoneNumber);
+                },
+              ),
+              _contactBy(
+                color: red,
+                icon: Icons.email,
+                onPressed: () {
+                  GlobalMethods.mailTo(email: email);
+                },
+              ),
+              _contactBy(
+                color: purple,
+                icon: Icons.call_outlined,
+                onPressed: () {
+                  GlobalMethods.callPhoneNumber(phoneNumber: phoneNumber);
+                },
+              ),
+            ],
+          ).pSymmetric(v: 15),
+          const Divider(thickness: 1),
+          15.heightBox,
+        ],
+      );
+    }
+
     return _isLoading
         ? Scaffold(
             backgroundColor: ghostWhite,
@@ -128,46 +191,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           userInfo(title: 'Phone Number:', content: phoneNumber)
                               .p(4),
                           15.heightBox,
-                          const Divider(thickness: 1),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              _contactBy(
-                                color: green,
-                                icon: FontAwesomeIcons.whatsapp,
-                                onPressed: () {
-                                  _openWhatsappChat();
-                                },
-                              ),
-                              _contactBy(
-                                color: red,
-                                icon: Icons.email,
-                                onPressed: () {
-                                  _mailTo();
-                                },
-                              ),
-                              _contactBy(
-                                color: purple,
-                                icon: Icons.call_outlined,
-                                onPressed: () {
-                                  _callPhoneNumber();
-                                },
-                              ),
-                            ],
-                          ).pSymmetric(v: 15),
-                          const Divider(
-                            thickness: 1,
-                          ),
-                          15.heightBox,
-                          MyMaterialButton(
-                            text: 'Logout',
-                            icon: FontAwesomeIcons.signOutAlt,
-                            onPressed: () {
-                              GlobalMethods.logout(context);
-                            },
-                            mainAxisSize: MainAxisSize.min,
-                          ).centered(),
-                          6.heightBox,
+                          isSameUser ? 0.heightBox : _contactWidget(),
+                          isSameUser ? _logoutButton() : 0.heightBox,
                         ],
                       ).p(15),
                     ),
@@ -201,33 +226,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ).centered(),
             ),
           );
-  }
-
-  void _openWhatsappChat() async {
-    var url = 'https://wa.me/$phoneNumber?text=HelloWorld';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Error Occured';
-    }
-  }
-
-  void _mailTo() async {
-    var mailUrl = 'mailto:$email';
-    if (await canLaunch(mailUrl)) {
-      await launch(mailUrl);
-    } else {
-      throw 'Error Occured';
-    }
-  }
-
-  void _callPhoneNumber() async {
-    var phoneUrl = 'tel://$phoneNumber';
-    if (await canLaunch(phoneUrl)) {
-      await launch(phoneUrl);
-    } else {
-      throw 'Error Occured';
-    }
   }
 
   Widget userInfo({required String title, required String content}) {

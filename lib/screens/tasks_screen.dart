@@ -68,6 +68,7 @@ class _TasksScreenState extends State<TasksScreen> {
           content: SizedBox(
             width: size.width * 0.9,
             child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: taskCategoryList.length,
               shrinkWrap: true,
               itemBuilder: (context, index) {
