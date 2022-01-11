@@ -211,45 +211,49 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
     required Function onTap,
     required int maxLength,
   }) {
-    return InkWell(
-      onTap: () {
-        onTap();
-      },
-      child: TextFormField(
-        validator: (value) {
-          if (value!.isEmpty) {
-            return 'Value is missing';
-          }
-          return null;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(5),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(5),
+        onTap: () {
+          onTap();
         },
-        controller: controller,
-        enabled: enabled,
-        key: ValueKey(valueKey),
-        maxLines: valueKey == 'TaskDescription' ? 3 : 1,
-        maxLength: maxLength,
-        style: const TextStyle(
-          color: darkBlue,
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.italic,
+        child: TextFormField(
+          validator: (value) {
+            if (value!.isEmpty) {
+              return 'Value is missing';
+            }
+            return null;
+          },
+          controller: controller,
+          enabled: enabled,
+          key: ValueKey(valueKey),
+          maxLines: valueKey == 'TaskDescription' ? 3 : 1,
+          maxLength: maxLength,
+          style: const TextStyle(
+            color: darkBlue,
+            fontWeight: FontWeight.bold,
+            fontStyle: FontStyle.italic,
+          ),
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: ghostWhite,
+            enabledBorder: myUnderlineInputBorderMethod(
+              color: ghostWhite,
+            ),
+            focusedBorder: myUnderlineInputBorderMethod(
+              color: pink,
+            ),
+            errorBorder: myErrorUnderlineInputBorderMethod(
+              color: red,
+            ),
+            focusedErrorBorder: myErrorUnderlineInputBorderMethod(
+              color: red,
+            ),
+          ),
         ),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: ghostWhite,
-          enabledBorder: myUnderlineInputBorderMethod(
-            color: ghostWhite,
-          ),
-          focusedBorder: myUnderlineInputBorderMethod(
-            color: pink,
-          ),
-          errorBorder: myErrorUnderlineInputBorderMethod(
-            color: red,
-          ),
-          focusedErrorBorder: myErrorUnderlineInputBorderMethod(
-            color: red,
-          ),
-        ),
-      ),
-    ).p(5);
+      ).p(5),
+    );
   }
 
   _pickDateDialog() async {

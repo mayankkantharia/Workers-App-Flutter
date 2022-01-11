@@ -17,7 +17,7 @@ class GlobalMethods {
   }
 
   static void openWhatsappChat({required phoneNumber}) async {
-    var url = 'https://wa.me/$phoneNumber?text=HelloWorld';
+    var url = 'https://wa.me/+91$phoneNumber?text=HelloWorld';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -26,7 +26,7 @@ class GlobalMethods {
   }
 
   static void callPhoneNumber({required phoneNumber}) async {
-    var phoneUrl = 'tel://$phoneNumber';
+    var phoneUrl = 'tel://+91$phoneNumber';
     if (await canLaunch(phoneUrl)) {
       await launch(phoneUrl);
     } else {

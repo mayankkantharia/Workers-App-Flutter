@@ -52,13 +52,17 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
                     userName: snapshot.data!.docs[index]['name'],
                   ).pOnly(
                     top: index == 0 ? 6 : 0,
-                    bottom: index == 14 ? 6 : 0,
+                    bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
                   );
                 },
               );
             } else {
               return const Text(
-                'There is no users',
+                'There is no user',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: darkBlue,
+                ),
               ).centered();
             }
           }

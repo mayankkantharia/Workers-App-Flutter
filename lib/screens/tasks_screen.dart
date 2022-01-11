@@ -1,14 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:work_app/constants.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/task_widget.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class TasksScreen extends StatefulWidget {
-  // const TasksScreen({Key? key}) : super(key: key);
-
   const TasksScreen({Key? key}) : super(key: key);
-
   @override
   State<TasksScreen> createState() => _TasksScreenState();
 }
@@ -40,14 +39,61 @@ class _TasksScreenState extends State<TasksScreen> {
           ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 15,
-        physics: const BouncingScrollPhysics(),
-        itemBuilder: (BuildContext context, int index) {
-          return const TaskWidget().pOnly(
-            top: index == 0 ? 6 : 0,
-            bottom: index == 14 ? 6 : 0,
-          );
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('tasks')
+            .orderBy('createdAt', descending: false)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SpinKitDualRing(
+              color: pink[700]!,
+            ).centered();
+          } else if (snapshot.connectionState == ConnectionState.active) {
+            if (snapshot.data!.docs.isNotEmpty) {
+              return ListView.builder(
+                itemCount: snapshot.data!.docs.length,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (BuildContext context, int index) {
+                  return TaskWidget(
+                    taskId: snapshot.data!.docs[index]['taskId'],
+                    taskTitle: snapshot.data!.docs[index]['taskTitle'],
+                    taskCategory: snapshot.data!.docs[index]['taskCategory'],
+                    taskDescription: snapshot.data!.docs[index]
+                        ['taskDescription'],
+                    taskUploadedBy: snapshot.data!.docs[index]['uploadedBy'],
+                    isDone: snapshot.data!.docs[index]['isDone'],
+                    // authorName: snapshot.data!.docs[index][''],
+                    // authorPosition: '',
+                    // userImageUrl: '',
+                    deadlineDate: snapshot.data!.docs[index]['deadlineDate'],
+                    deadlineDateTimestamp: snapshot.data!.docs[index]
+                        ['deadlineDateTimeStamp'],
+                    postedDateTimestamp: snapshot.data!.docs[index]
+                        ['createdAt'],
+                  ).pOnly(
+                    top: index == 0 ? 6 : 0,
+                    bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
+                  );
+                },
+              );
+            } else {
+              return const Text(
+                'There are no tasks.',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: darkBlue,
+                ),
+              ).centered();
+            }
+          }
+          return const Text(
+            'Something went wrong.',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 30,
+            ),
+          ).centered();
         },
       ),
     );
