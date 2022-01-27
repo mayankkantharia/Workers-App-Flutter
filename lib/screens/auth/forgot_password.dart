@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/constants.dart';
+import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:animate_do/animate_do.dart';
 
@@ -18,6 +21,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
   final TextEditingController _emailTextController = TextEditingController();
   final FocusNode _emailFocusNode = FocusNode();
   final _forgotPasswordFormKey = GlobalKey<FormState>();
+  bool _isLoading = false;
   @override
   void initState() {
     _animationController = AnimationController(
@@ -51,9 +55,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
     super.dispose();
   }
 
-  void _forgotPassword() {
+  Future<void> _forgotPassword() async {
     final isValid = _forgotPasswordFormKey.currentState!.validate();
-    if (isValid) {}
+    if (isValid) {
+      _forgotPasswordFormKey.currentState!.save();
+      setState(() {
+        _isLoading = true;
+      });
+      final FirebaseAuth _auth = FirebaseAuth.instance;
+      try {
+        await _auth.sendPasswordResetEmail(email: _emailTextController.text);
+        _emailTextController.clear();
+        Fluttertoast.showToast(msg: 'Reset mail sent successfully.');
+      } catch (error) {
+        GlobalMethods.showErrorDialog(
+          error: error.toString(),
+          context: context,
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -132,10 +155,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                       ),
                     ),
                   ),
-                  MyMaterialButton(
-                    text: 'Reset Now',
-                    onPressed: _forgotPassword,
-                  ).py(20),
+                  _isLoading
+                      ? const CircularProgressIndicator().centered().p(20)
+                      : MyMaterialButton(
+                          text: 'Reset Now',
+                          onPressed: _forgotPassword,
+                        ).py(20),
                 ],
               ),
             ),
