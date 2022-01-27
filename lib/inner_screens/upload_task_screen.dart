@@ -92,9 +92,6 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
           _isLoading = false;
         });
       }
-    } else {
-      // ignore: avoid_print
-      print('is not valid');
     }
   }
 

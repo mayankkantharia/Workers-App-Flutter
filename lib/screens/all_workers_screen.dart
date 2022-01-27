@@ -8,7 +8,6 @@ import 'package:velocity_x/velocity_x.dart';
 
 class AllWorkersScreen extends StatefulWidget {
   const AllWorkersScreen({Key? key}) : super(key: key);
-
   @override
   _AllWorkersScreenState createState() => _AllWorkersScreenState();
 }
@@ -16,7 +15,6 @@ class AllWorkersScreen extends StatefulWidget {
 class _AllWorkersScreenState extends State<AllWorkersScreen> {
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
     return Scaffold(
       drawer: const DrawerWidget(),
       appBar: AppBar(

@@ -66,7 +66,6 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.network(
-                // 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png',
                 widget.userImageUrl.isEmpty
                     ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
                     : widget.userImageUrl,

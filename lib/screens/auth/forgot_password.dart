@@ -53,10 +53,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
 
   void _forgotPassword() {
     final isValid = _forgotPasswordFormKey.currentState!.validate();
-    if (isValid) {
-      // ignore: avoid_print
-      print(_emailTextController.text);
-    }
+    if (isValid) {}
   }
 
   @override
@@ -138,7 +135,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
                   MyMaterialButton(
                     text: 'Reset Now',
                     onPressed: _forgotPassword,
-                    // icon: Icons.lock,
                   ).py(20),
                 ],
               ),

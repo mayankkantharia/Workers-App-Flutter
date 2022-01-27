@@ -24,8 +24,8 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen>
     with TickerProviderStateMixin {
-  late AnimationController _animationController;
   late Animation<double> _animation;
+  late AnimationController _animationController;
   final TextEditingController _fullNameTextController = TextEditingController();
   final TextEditingController _emailTextController = TextEditingController();
   final TextEditingController _passwordTextController = TextEditingController();
@@ -415,15 +415,13 @@ class _RegisterScreenState extends State<RegisterScreen>
                     ),
                   ),
                   _isLoading
-                      ? Center(
-                          child: SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: CircularProgressIndicator(
-                              color: pink[700]!,
-                            ),
-                          ).py(40),
-                        )
+                      ? SizedBox(
+                          height: 50,
+                          width: 50,
+                          child: CircularProgressIndicator(
+                            color: pink[700]!,
+                          ),
+                        ).py(40).centered()
                       : MyMaterialButton(
                           text: 'SignUp',
                           onPressed: _submitFormSignUp,
@@ -539,6 +537,9 @@ class _RegisterScreenState extends State<RegisterScreen>
       context: context,
       builder: (context) {
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text(
             'Choose your Job',
             style: myHeadingTextStyle,

@@ -10,11 +10,11 @@ import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 
 class ProfileScreen extends StatefulWidget {
-  final String userID;
   const ProfileScreen({
     Key? key,
     required this.userID,
   }) : super(key: key);
+  final String userID;
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -187,9 +187,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             style: _titleTextStyle,
                           ).pSymmetric(h: 4),
                           15.heightBox,
-                          userInfo(title: 'Email:', content: email).p(4),
-                          userInfo(title: 'Phone Number:', content: phoneNumber)
-                              .p(4),
+                          userInfo(
+                            title: 'Email:',
+                            content: email,
+                          ).p(4),
+                          userInfo(
+                            title: 'Phone Number:',
+                            content: phoneNumber,
+                          ).p(4),
                           15.heightBox,
                           isSameUser ? 0.heightBox : _contactWidget(),
                           isSameUser ? _logoutButton() : 0.heightBox,
@@ -206,10 +211,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             color: red,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              width: 8,
+                              width: 10,
                               color: ghostWhite,
+                              style: BorderStyle.solid,
                             ),
                             image: DecorationImage(
+                              filterQuality: FilterQuality.medium,
                               image: NetworkImage(
                                 imageUrl == "" || imageUrl.isEmptyOrNull
                                     ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'

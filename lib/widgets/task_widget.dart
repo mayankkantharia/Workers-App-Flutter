@@ -7,19 +7,15 @@ import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/task_details.dart';
 import 'package:work_app/services/global_methods.dart';
 
-class TaskWidget extends StatefulWidget {
-  const TaskWidget({
+class TaskWidget extends StatelessWidget {
+  TaskWidget({
     Key? key,
     required this.taskTitle,
     required this.taskDescription,
     required this.taskId,
     required this.taskUploadedBy,
     required this.isDone,
-    // required this.authorPosition,
-    // required this.authorName,
-    // required this.userImageUrl,
     required this.taskCategory,
-    // required this.postedDate,
     required this.deadlineDate,
     required this.postedDateTimestamp,
     required this.deadlineDateTimestamp,
@@ -29,23 +25,73 @@ class TaskWidget extends StatefulWidget {
   final String taskTitle;
   final String taskUploadedBy;
   final String taskDescription;
-  // final String authorName;
-  // final String authorPosition;
-  // final String userImageUrl;
   final String taskCategory;
-  // final String postedDate;
   final String deadlineDate;
   final Timestamp postedDateTimestamp;
   final Timestamp deadlineDateTimestamp;
 
-  @override
-  _TaskWidgetState createState() => _TaskWidgetState();
-}
-
-class _TaskWidgetState extends State<TaskWidget> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
+    _deleteDialog() {
+      User? user = _auth.currentUser;
+      final _uid = user!.uid;
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            actions: [
+              TextButton(
+                onPressed: () async {
+                  try {
+                    if (taskUploadedBy == _uid) {
+                      FirebaseFirestore.instance
+                          .collection('tasks')
+                          .doc(taskId)
+                          .delete();
+                      await Fluttertoast.showToast(
+                        msg: 'The task has been deleted.',
+                        fontSize: 16.0,
+                      );
+                      Navigator.canPop(context) ? Navigator.pop(context) : null;
+                    } else {
+                      Navigator.canPop(context) ? Navigator.pop(context) : null;
+                      GlobalMethods.showErrorDialog(
+                        error: 'You cannot perform this action.',
+                        context: context,
+                      );
+                    }
+                  } catch (error) {
+                    Navigator.canPop(context) ? Navigator.pop(context) : null;
+                    GlobalMethods.showErrorDialog(
+                      error: "This task can't be deleted.",
+                      context: context,
+                    );
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Icon(
+                      Icons.delete,
+                      color: red,
+                    ),
+                    Text(
+                      'Delete',
+                      style: TextStyle(
+                        color: red,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      );
+    }
+
     return Card(
       elevation: 5,
       color: white,
@@ -58,15 +104,15 @@ class _TaskWidgetState extends State<TaskWidget> {
           navigateWithoutReplacement(
             context,
             TaskDetailsScreen(
-              taskId: widget.taskId,
-              uploadedBy: widget.taskUploadedBy,
-              taskTitle: widget.taskTitle,
-              taskDescription: widget.taskDescription,
-              taskCategory: widget.taskCategory,
-              isDone: widget.isDone,
-              deadlineDate: widget.deadlineDate,
-              deadlineDateTimestamp: widget.deadlineDateTimestamp,
-              postedDateTimestamp: widget.postedDateTimestamp,
+              taskId: taskId,
+              uploadedBy: taskUploadedBy,
+              taskTitle: taskTitle,
+              taskDescription: taskDescription,
+              taskCategory: taskCategory,
+              isDone: isDone,
+              deadlineDate: deadlineDate,
+              deadlineDateTimestamp: deadlineDateTimestamp,
+              postedDateTimestamp: postedDateTimestamp,
             ),
           );
         },
@@ -91,14 +137,14 @@ class _TaskWidgetState extends State<TaskWidget> {
             backgroundColor: transparent,
             radius: 20,
             child: Image.network(
-              widget.isDone
+              isDone
                   ? 'https://image.flaticon.com/icons/png/128/390/390973.png'
                   : 'https://image.flaticon.com/icons/png/128/850/850960.png',
             ),
           ),
         ),
         title: Text(
-          widget.taskTitle,
+          taskTitle,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
           style: const TextStyle(
@@ -115,7 +161,7 @@ class _TaskWidgetState extends State<TaskWidget> {
               color: pink[800],
             ),
             Text(
-              widget.taskDescription,
+              taskDescription,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                 fontWeight: FontWeight.normal,
@@ -130,62 +176,6 @@ class _TaskWidgetState extends State<TaskWidget> {
           color: pink[800],
         ),
       ),
-    );
-  }
-
-  _deleteDialog() {
-    User? user = _auth.currentUser;
-    final _uid = user!.uid;
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          actions: [
-            TextButton(
-              onPressed: () async {
-                try {
-                  if (widget.taskUploadedBy == _uid) {
-                    FirebaseFirestore.instance
-                        .collection('tasks')
-                        .doc(widget.taskId)
-                        .delete();
-                    await Fluttertoast.showToast(
-                      msg: 'The task has been deleted.',
-                      fontSize: 16.0,
-                    );
-                    Navigator.canPop(context) ? Navigator.pop(context) : null;
-                  } else {
-                    GlobalMethods.showErrorDialog(
-                      error: 'You cannot perform this action.',
-                      context: context,
-                    );
-                  }
-                } catch (error) {
-                  GlobalMethods.showErrorDialog(
-                    error: "This task can't be deleted.",
-                    context: context,
-                  );
-                }
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(
-                    Icons.delete,
-                    color: red,
-                  ),
-                  Text(
-                    'Delete',
-                    style: TextStyle(
-                      color: red,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

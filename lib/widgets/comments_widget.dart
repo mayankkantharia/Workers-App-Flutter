@@ -6,12 +6,6 @@ import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/profile_screen.dart';
 
 class CommentWidget extends StatelessWidget {
-  final String commentId;
-  final String commenterId;
-  final String commenterName;
-  final String commentBody;
-  final String commenterImageUrl;
-
   CommentWidget({
     Key? key,
     required this.commentId,
@@ -20,6 +14,11 @@ class CommentWidget extends StatelessWidget {
     required this.commentBody,
     required this.commenterImageUrl,
   }) : super(key: key);
+  final String commentId;
+  final String commenterId;
+  final String commenterName;
+  final String commentBody;
+  final String commenterImageUrl;
   final List<Color> _colors = [
     red,
     blue,
@@ -32,13 +31,25 @@ class CommentWidget extends StatelessWidget {
     darkBlue,
     brown,
   ];
+  final commenterNameTextStyle = const TextStyle(
+    fontSize: 18,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.bold,
+  );
+  final commentBodyTextStyle = TextStyle(
+    color: grey.shade700,
+    fontStyle: FontStyle.normal,
+    fontWeight: FontWeight.normal,
+  );
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
         navigateWithoutReplacement(
           context,
-          ProfileScreen(userID: commenterId),
+          ProfileScreen(
+            userID: commenterId,
+          ),
         );
       },
       child: Row(
@@ -73,19 +84,11 @@ class CommentWidget extends StatelessWidget {
               children: <Widget>[
                 Text(
                   commenterName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: commenterNameTextStyle,
                 ),
                 Text(
                   commentBody,
-                  style: TextStyle(
-                    color: grey.shade700,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.normal,
-                  ),
+                  style: commentBodyTextStyle,
                 ),
               ],
             ),

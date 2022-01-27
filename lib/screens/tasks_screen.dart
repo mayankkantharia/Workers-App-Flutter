@@ -13,6 +13,7 @@ class TasksScreen extends StatefulWidget {
 }
 
 class _TasksScreenState extends State<TasksScreen> {
+  String filterState = 'All';
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -55,26 +56,33 @@ class _TasksScreenState extends State<TasksScreen> {
                 itemCount: snapshot.data!.docs.length,
                 physics: const BouncingScrollPhysics(),
                 itemBuilder: (BuildContext context, int index) {
-                  return TaskWidget(
-                    taskId: snapshot.data!.docs[index]['taskId'],
-                    taskTitle: snapshot.data!.docs[index]['taskTitle'],
-                    taskCategory: snapshot.data!.docs[index]['taskCategory'],
-                    taskDescription: snapshot.data!.docs[index]
-                        ['taskDescription'],
-                    taskUploadedBy: snapshot.data!.docs[index]['uploadedBy'],
-                    isDone: snapshot.data!.docs[index]['isDone'],
-                    // authorName: snapshot.data!.docs[index][''],
-                    // authorPosition: '',
-                    // userImageUrl: '',
-                    deadlineDate: snapshot.data!.docs[index]['deadlineDate'],
-                    deadlineDateTimestamp: snapshot.data!.docs[index]
-                        ['deadlineDateTimeStamp'],
-                    postedDateTimestamp: snapshot.data!.docs[index]
-                        ['createdAt'],
-                  ).pOnly(
-                    top: index == 0 ? 6 : 0,
-                    bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
-                  );
+                  _myTaskWidget() {
+                    return TaskWidget(
+                      taskId: snapshot.data!.docs[index]['taskId'],
+                      taskTitle: snapshot.data!.docs[index]['taskTitle'],
+                      taskCategory: snapshot.data!.docs[index]['taskCategory'],
+                      taskDescription: snapshot.data!.docs[index]
+                          ['taskDescription'],
+                      taskUploadedBy: snapshot.data!.docs[index]['uploadedBy'],
+                      isDone: snapshot.data!.docs[index]['isDone'],
+                      deadlineDate: snapshot.data!.docs[index]['deadlineDate'],
+                      deadlineDateTimestamp: snapshot.data!.docs[index]
+                          ['deadlineDateTimeStamp'],
+                      postedDateTimestamp: snapshot.data!.docs[index]
+                          ['createdAt'],
+                    ).pOnly(
+                      top: index == 0 ? 6 : 0,
+                      bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
+                    );
+                  }
+
+                  return filterState == 'All'
+                      ? _myTaskWidget()
+                      : filterState ==
+                              snapshot.data!.docs[index]['taskCategory']
+                                  .toString()
+                          ? _myTaskWidget()
+                          : 0.heightBox;
                 },
               );
             } else {
@@ -119,7 +127,12 @@ class _TasksScreenState extends State<TasksScreen> {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    setState(() {
+                      filterState = taskCategoryList[index];
+                    });
+                    Navigator.canPop(context) ? Navigator.pop(context) : null;
+                  },
                   child: Row(
                     children: [
                       Icon(
@@ -128,11 +141,7 @@ class _TasksScreenState extends State<TasksScreen> {
                       ),
                       Text(
                         taskCategoryList[index],
-                        style: const TextStyle(
-                          color: darkBlue,
-                          fontSize: 18,
-                          fontStyle: FontStyle.italic,
-                        ),
+                        style: myDialogTextStyle,
                       ).p(8),
                     ],
                   ),
@@ -151,7 +160,12 @@ class _TasksScreenState extends State<TasksScreen> {
               ),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  filterState = 'All';
+                });
+                Navigator.canPop(context) ? Navigator.pop(context) : null;
+              },
               child: const Text(
                 'Cancel Filter',
                 style: myAlertTextButtonTextStyle,

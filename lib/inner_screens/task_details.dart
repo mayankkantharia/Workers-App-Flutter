@@ -79,44 +79,54 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
     setState(() {
       _isLoading = true;
     });
-    user = _auth.currentUser;
-    _uid = user!.uid;
-    final DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.uploadedBy)
-        .get();
-    if (userDoc.exists) {
+    try {
+      user = _auth.currentUser;
+      _uid = user!.uid;
+      final DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.uploadedBy)
+          .get();
+      if (userDoc.exists) {
+        setState(() {
+          authorName = userDoc.get('name');
+          authorPosition = userDoc.get('positionInCompany');
+          userImageUrl = userDoc.get('userImage');
+        });
+      } else {
+        return;
+      }
+      final DocumentSnapshot getCommenterInfoDoc =
+          await FirebaseFirestore.instance.collection('users').doc(_uid).get();
+      if (getCommenterInfoDoc.exists) {
+        setState(() {
+          _loggedUserName = getCommenterInfoDoc.get('name');
+          _loggedInUserImageUrl = getCommenterInfoDoc.get('userImage');
+        });
+      } else {
+        return;
+      }
+      var postDate = widget.postedDateTimestamp.toDate();
+      postedDate = '${postDate.year}-${postDate.month}-${postDate.day}';
+      var date = widget.deadlineDateTimestamp.toDate();
+      isDeadlineAvailable = date.isAfter(DateTime.now());
+      final DocumentSnapshot taskDatabase = await FirebaseFirestore.instance
+          .collection('tasks')
+          .doc(widget.taskId)
+          .get();
+      if (taskDatabase.exists) {
+        setState(() {
+          _isDone = taskDatabase.get('isDone');
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
       setState(() {
-        authorName = userDoc.get('name');
-        authorPosition = userDoc.get('positionInCompany');
-        userImageUrl = userDoc.get('userImage');
-      });
-    } else {
-      return;
-    }
-    final DocumentSnapshot getCommenterInfoDoc =
-        await FirebaseFirestore.instance.collection('users').doc(_uid).get();
-    if (getCommenterInfoDoc.exists) {
-      setState(() {
-        _loggedUserName = getCommenterInfoDoc.get('name');
-        _loggedInUserImageUrl = getCommenterInfoDoc.get('userImage');
-      });
-    } else {
-      return;
-    }
-    var postDate = widget.postedDateTimestamp.toDate();
-    postedDate = '${postDate.year}-${postDate.month}-${postDate.day}';
-    var date = widget.deadlineDateTimestamp.toDate();
-    isDeadlineAvailable = date.isAfter(DateTime.now());
-    final DocumentSnapshot taskDatabase = await FirebaseFirestore.instance
-        .collection('tasks')
-        .doc(widget.taskId)
-        .get();
-    if (taskDatabase.exists) {
-      setState(() {
-        _isDone = taskDatabase.get('isDone');
         _isLoading = false;
       });
+      GlobalMethods.showErrorDialog(
+        error: error.toString(),
+        context: context,
+      );
     }
   }
 
@@ -152,7 +162,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                 children: <Widget>[
                   Text(
                     widget.taskTitle,
-                    // taskTitle == null ? '' : taskTitle!,
                     style: const TextStyle(
                       color: darkBlue,
                       fontWeight: FontWeight.bold,
@@ -171,7 +180,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         Row(
                           children: <Widget>[
                             Text(
-                              'Uploaded By',
+                              'Uploaded By:',
                               style: _boldTextStyle,
                             ),
                             const Spacer(),
@@ -206,6 +215,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                 Text(
                                   authorPosition == null ? '' : authorPosition!,
                                   style: _textStyle,
+                                  maxLines: 2,
                                 ),
                               ],
                             ),
@@ -239,7 +249,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             ),
                             Text(
                               widget.deadlineDate,
-                              // deadlineDate == null ? '' : deadlineDate!,
                               style: const TextStyle(
                                 color: red,
                                 fontWeight: FontWeight.bold,
@@ -350,7 +359,6 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                         10.heightBox,
                         Text(
                           widget.taskDescription,
-                          // taskDescription == null ? '' : taskDescription!,
                           style: _textStyle,
                         ),
                         5.heightBox,
