@@ -65,11 +65,15 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
             radius: 20,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.network(
-                widget.userImageUrl.isEmpty
-                    ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-                    : widget.userImageUrl,
-                fit: BoxFit.cover,
+              child: SizedBox(
+                height: 60,
+                width: 60,
+                child: Image.network(
+                  widget.userImageUrl.isEmpty
+                      ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
+                      : widget.userImageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
