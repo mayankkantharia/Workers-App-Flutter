@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/drawer_widget.dart';

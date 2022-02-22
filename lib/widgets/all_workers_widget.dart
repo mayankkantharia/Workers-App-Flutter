@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/profile_screen.dart';
 import 'package:work_app/services/global_methods.dart';
@@ -69,9 +69,7 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
                 height: 60,
                 width: 60,
                 child: Image.network(
-                  widget.userImageUrl.isEmpty
-                      ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-                      : widget.userImageUrl,
+                  widget.userImageUrl,
                   fit: BoxFit.cover,
                 ),
               ),

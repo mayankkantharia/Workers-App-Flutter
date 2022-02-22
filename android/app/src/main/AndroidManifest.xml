@@ -26,7 +26,7 @@
         </intent>
     </queries>
     <application
-        android:label="work_app"
+        android:label="Work App"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"

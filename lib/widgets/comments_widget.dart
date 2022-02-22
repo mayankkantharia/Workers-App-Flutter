@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/profile_screen.dart';

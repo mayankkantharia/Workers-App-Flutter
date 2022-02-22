@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/task_widget.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -98,8 +98,8 @@ class _TasksScreenState extends State<TasksScreen> {
           return const Text(
             'Something went wrong.',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
+              fontSize: 18,
+              color: darkBlue,
             ),
           ).centered();
         },

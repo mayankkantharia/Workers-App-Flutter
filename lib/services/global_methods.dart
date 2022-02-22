@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
-import 'package:work_app/user_state.dart';
+import 'package:work_app/helpers/user_state.dart';
 
 class GlobalMethods {
   static void mailTo({required email}) async {
@@ -45,8 +45,8 @@ class GlobalMethods {
           ),
           title: Row(
             children: [
-              Image.network(
-                'https://image.flaticon.com/icons/png/128/1252/1252006.png',
+              Image.asset(
+                'assets/images/logout.png',
                 height: 25,
                 width: 25,
               ).p(8),

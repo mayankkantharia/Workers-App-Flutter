@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/task_details.dart';
 import 'package:work_app/services/global_methods.dart';
@@ -136,10 +136,8 @@ class TaskWidget extends StatelessWidget {
           child: CircleAvatar(
             backgroundColor: transparent,
             radius: 20,
-            child: Image.network(
-              isDone
-                  ? 'https://image.flaticon.com/icons/png/128/390/390973.png'
-                  : 'https://image.flaticon.com/icons/png/128/850/850960.png',
+            child: Image.asset(
+              isDone ? 'assets/images/done.png' : 'assets/images/not_done.png',
             ),
           ),
         ),

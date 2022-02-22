@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:work_app/user_state.dart';
+import 'package:work_app/helpers/user_state.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

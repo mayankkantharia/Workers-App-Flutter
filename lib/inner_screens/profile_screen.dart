@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:work_app/services/global_methods.dart';
@@ -218,9 +218,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             image: DecorationImage(
                               filterQuality: FilterQuality.medium,
                               image: NetworkImage(
-                                imageUrl == "" || imageUrl.isEmptyOrNull
-                                    ? 'https://cdn.icon-icons.com/icons2/2643/PNG/512/male_boy_person_people_avatar_icon_159358.png'
-                                    : imageUrl,
+                                imageUrl,
                               ),
                               fit: BoxFit.fill,
                             ),

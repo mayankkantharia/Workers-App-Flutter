@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/inner_screens/profile_screen.dart';
@@ -30,8 +30,8 @@ class DrawerWidget extends StatelessWidget {
               children: [
                 Flexible(
                   flex: 2,
-                  child: Image.network(
-                    'https://image.flaticon.com/icons/png/128/1055/1055672.png',
+                  child: Image.asset(
+                    'assets/images/work.png',
                   ),
                 ),
                 10.heightBox,

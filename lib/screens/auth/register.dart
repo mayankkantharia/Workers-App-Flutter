@@ -3,10 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:work_app/helpers/screen_navigation.dart';
 import 'package:work_app/screens/auth/login.dart';
 import 'package:work_app/services/global_methods.dart';
@@ -152,13 +150,8 @@ class _RegisterScreenState extends State<RegisterScreen>
     return Scaffold(
       body: Stack(
         children: [
-          CachedNetworkImage(
-            imageUrl:
-                "https://media.istockphoto.com/photos/businesswoman-using-computer-in-dark-office-picture-id557608443?k=6&m=557608443&s=612x612&w=0&h=fWWESl6nk7T6ufo4sRjRBSeSiaiVYAzVrY-CLlfMptM=",
-            placeholder: (context, url) => SpinKitDualRing(
-              color: pink[700]!,
-            ).centered(),
-            errorWidget: (context, url, error) => const Icon(Icons.error),
+          Image.asset(
+            'assets/images/background.png',
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,
@@ -235,8 +228,8 @@ class _RegisterScreenState extends State<RegisterScreen>
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(16),
                                   child: imageFile == null
-                                      ? Image.network(
-                                          'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png',
+                                      ? Image.asset(
+                                          'assets/images/profile.png',
                                           fit: BoxFit.fill,
                                         )
                                       : Image.file(

@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:uuid/uuid.dart';
-import 'package:work_app/constants.dart';
+import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/comments_widget.dart';
@@ -195,9 +195,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
                                   image: NetworkImage(
-                                    userImageUrl == null
-                                        ? 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'
-                                        : userImageUrl!,
+                                    userImageUrl!,
                                   ),
                                   fit: BoxFit.fill,
                                 ),
