@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:work_app/constants/constants.dart';
 import 'package:work_app/widgets/all_workers_widget.dart';
+import 'package:work_app/widgets/common_widgets.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:velocity_x/velocity_x.dart';
 
@@ -49,28 +50,19 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
                     userImageUrl: snapshot.data!.docs[index]['userImage'],
                     userName: snapshot.data!.docs[index]['name'],
                   ).pOnly(
-                    top: index == 0 ? 6 : 0,
-                    bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
+                    bottom: index == snapshot.data!.docs.length - 1 ? 30 : 0,
                   );
                 },
               );
             } else {
-              return const Text(
-                'There is no user',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: darkBlue,
-                ),
-              ).centered();
+              return messageWidget(
+                message: 'There is no user',
+              );
             }
           }
-          return const Text(
-            'Something went wrong.',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 30,
-            ),
-          ).centered();
+          return messageWidget(
+            message: 'Something went wrong.',
+          );
         },
       ),
     );

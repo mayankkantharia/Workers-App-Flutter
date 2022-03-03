@@ -82,9 +82,9 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
           _taskCategoryController.text = 'Choose Task Category';
           _taskDeadlineDateController.text = 'Choose Task Deadline Date';
         });
-      } catch (error) {
+      } on FirebaseException catch (error) {
         GlobalMethods.showErrorDialog(
-          error: error.toString(),
+          error: error.message.toString(),
           context: context,
         );
       } finally {
@@ -112,6 +112,7 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
       drawer: const DrawerWidget(),
       body: SafeArea(
         child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
           child: Card(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),

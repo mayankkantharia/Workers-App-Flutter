@@ -14,89 +14,91 @@ class DrawerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(
-              color: cyan,
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(10),
-                bottomRight: Radius.circular(10),
-              ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Flexible(
-                  flex: 2,
-                  child: Image.asset(
-                    'assets/images/work.png',
-                  ),
+    return SafeArea(
+      child: Drawer(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: cyan,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(10),
                 ),
-                10.heightBox,
-                const Flexible(
-                  child: Text(
-                    'Work App',
-                    style: TextStyle(
-                      color: darkBlue,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      fontStyle: FontStyle.italic,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: Image.asset(
+                      'assets/images/work.png',
                     ),
                   ),
-                ),
-              ],
+                  10.heightBox,
+                  const Flexible(
+                    child: Text(
+                      'Work App',
+                      style: TextStyle(
+                        color: darkBlue,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-          10.heightBox,
-          _listTile(
-            label: 'All Tasks',
-            onTap: () {
-              navigateWithReplacement(context, const TasksScreen());
-            },
-            icon: Icons.task_outlined,
-          ),
-          _listTile(
-            label: 'My Account',
-            onTap: () {
-              final FirebaseAuth _auth = FirebaseAuth.instance;
-              final User user = _auth.currentUser!;
-              final String uid = user.uid;
-              navigateWithReplacement(
-                context,
-                ProfileScreen(
-                  userID: uid,
-                ),
-              );
-            },
-            icon: Icons.account_circle_outlined,
-          ),
-          _listTile(
-            label: 'Registered Workers',
-            onTap: () {
-              navigateWithReplacement(context, const AllWorkersScreen());
-            },
-            icon: Icons.workspaces_outline,
-          ),
-          _listTile(
-            label: 'Add a task',
-            onTap: () {
-              navigateWithReplacement(context, const UploadTaskScreen());
-            },
-            icon: Icons.add_task,
-          ),
-          const Divider(
-            thickness: 1,
-          ),
-          _listTile(
-            label: 'Logout',
-            onTap: () {
-              GlobalMethods.logout(context);
-            },
-            icon: Icons.logout,
-          ),
-        ],
+            _listTile(
+              label: 'All Tasks',
+              onTap: () {
+                navigateWithReplacement(context, const TasksScreen());
+              },
+              icon: Icons.task_outlined,
+            ),
+            _listTile(
+              label: 'My Account',
+              onTap: () {
+                final FirebaseAuth _auth = FirebaseAuth.instance;
+                final User user = _auth.currentUser!;
+                final String uid = user.uid;
+                navigateWithReplacement(
+                  context,
+                  ProfileScreen(
+                    userID: uid,
+                  ),
+                );
+              },
+              icon: Icons.account_circle_outlined,
+            ),
+            _listTile(
+              label: 'Registered Workers',
+              onTap: () {
+                navigateWithReplacement(context, const AllWorkersScreen());
+              },
+              icon: Icons.people_outline_outlined,
+            ),
+            _listTile(
+              label: 'Add a task',
+              onTap: () {
+                navigateWithReplacement(context, const UploadTaskScreen());
+              },
+              icon: Icons.add_task,
+            ),
+            const Divider(
+              thickness: 1,
+            ),
+            _listTile(
+              label: 'Logout',
+              onTap: () {
+                GlobalMethods.logout(context);
+              },
+              icon: Icons.logout,
+            ),
+          ],
+        ),
       ),
     );
   }

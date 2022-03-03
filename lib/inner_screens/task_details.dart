@@ -7,6 +7,7 @@ import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/services/global_methods.dart';
 import 'package:work_app/widgets/comments_widget.dart';
+import 'package:work_app/widgets/common_widgets.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 
 class TaskDetailsScreen extends StatefulWidget {
@@ -119,12 +120,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           _isLoading = false;
         });
       }
-    } catch (error) {
+    } on FirebaseException catch (error) {
       setState(() {
         _isLoading = false;
       });
       GlobalMethods.showErrorDialog(
-        error: error.toString(),
+        error: error.message.toString(),
         context: context,
       );
     }
@@ -132,6 +133,64 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    void _postComment() async {
+      if (_commentController.text.isEmptyOrNull) {
+        GlobalMethods.showErrorDialog(
+          error: 'Comment can\'t be empty.',
+          context: context,
+        );
+      } else {
+        final _generatedId = const Uuid().v4();
+        await FirebaseFirestore.instance
+            .collection('tasks')
+            .doc(widget.taskId)
+            .update({
+          'taskComments': FieldValue.arrayUnion([
+            {
+              'userId': _uid,
+              'commentId': _generatedId,
+              'name': _loggedUserName,
+              'userImageUrl': _loggedInUserImageUrl,
+              'commentBody': _commentController.text,
+              'time': Timestamp.now(),
+            }
+          ]),
+        });
+        await Fluttertoast.showToast(
+          msg: 'Your comment is added.',
+          fontSize: 16.0,
+        );
+        _commentController.clear();
+        setState(() {
+          _isCommenting = !_isCommenting;
+        });
+      }
+    }
+
+    void _isDoneTask({required bool isDone}) async {
+      if (_uid == widget.uploadedBy) {
+        try {
+          FirebaseFirestore.instance
+              .collection('tasks')
+              .doc(widget.taskId)
+              .update({
+            'isDone': isDone,
+          });
+          getTaskData();
+        } catch (error) {
+          GlobalMethods.showErrorDialog(
+            error: 'Action cannot be performed.',
+            context: context,
+          );
+        }
+      } else {
+        GlobalMethods.showErrorDialog(
+          error: 'You cannot perform this action.',
+          context: context,
+        );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -167,7 +226,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                       fontWeight: FontWeight.bold,
                       fontSize: 26,
                     ),
-                  ).py(20),
+                  ).py(10),
                   Card(
                     elevation: 5,
                     shape: RoundedRectangleBorder(
@@ -276,27 +335,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           children: <Widget>[
                             TextButton(
                               onPressed: () {
-                                if (_uid == widget.uploadedBy) {
-                                  try {
-                                    FirebaseFirestore.instance
-                                        .collection('tasks')
-                                        .doc(widget.taskId)
-                                        .update({
-                                      'isDone': true,
-                                    });
-                                    getTaskData();
-                                  } catch (error) {
-                                    GlobalMethods.showErrorDialog(
-                                      error: 'Action cannot be performed.',
-                                      context: context,
-                                    );
-                                  }
-                                } else {
-                                  GlobalMethods.showErrorDialog(
-                                    error: 'You cannot perform this action.',
-                                    context: context,
-                                  );
-                                }
+                                _isDoneTask(isDone: true);
                               },
                               child: Text(
                                 'Done',
@@ -313,27 +352,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             40.widthBox,
                             TextButton(
                               onPressed: () {
-                                if (_uid == widget.uploadedBy) {
-                                  try {
-                                    FirebaseFirestore.instance
-                                        .collection('tasks')
-                                        .doc(widget.taskId)
-                                        .update({
-                                      'isDone': false,
-                                    });
-                                    getTaskData();
-                                  } catch (error) {
-                                    GlobalMethods.showErrorDialog(
-                                      error: 'Action cannot be performed.',
-                                      context: context,
-                                    );
-                                  }
-                                } else {
-                                  GlobalMethods.showErrorDialog(
-                                    error: 'You cannot perform this action.',
-                                    context: context,
-                                  );
-                                }
+                                _isDoneTask(isDone: false);
                               },
                               child: Text(
                                 'Not Done',
@@ -402,47 +421,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                             text: 'Post',
                                             textSize: 18,
                                             mainAxisSize: MainAxisSize.min,
-                                            onPressed: () async {
-                                              if (_commentController
-                                                  .text.isEmptyOrNull) {
-                                                GlobalMethods.showErrorDialog(
-                                                  error:
-                                                      'Comment can\'t be empty.',
-                                                  context: context,
-                                                );
-                                              } else {
-                                                final _generatedId =
-                                                    const Uuid().v4();
-                                                await FirebaseFirestore.instance
-                                                    .collection('tasks')
-                                                    .doc(widget.taskId)
-                                                    .update({
-                                                  'taskComments':
-                                                      FieldValue.arrayUnion([
-                                                    {
-                                                      'userId': _uid,
-                                                      'commentId': _generatedId,
-                                                      'name': _loggedUserName,
-                                                      'userImageUrl':
-                                                          _loggedInUserImageUrl,
-                                                      'commentBody':
-                                                          _commentController
-                                                              .text,
-                                                      'time': Timestamp.now(),
-                                                    }
-                                                  ]),
-                                                });
-                                                await Fluttertoast.showToast(
-                                                  msg: 'Your comment is added.',
-                                                  fontSize: 16.0,
-                                                );
-                                                _commentController.clear();
-                                                setState(() {
-                                                  _isCommenting =
-                                                      !_isCommenting;
-                                                });
-                                              }
-                                            },
+                                            onPressed: _postComment,
                                           ).centered(),
                                           15.heightBox,
                                           TextButton(
@@ -488,37 +467,31 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                   .centered();
                             } else {
                               if (snapshot.data!['taskComments'].length == 0) {
-                                return const Text(
-                                  'There are no comments.',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: darkBlue,
-                                  ),
-                                ).centered();
+                                return messageWidget(
+                                  message: 'There are no comments.',
+                                );
                               }
                             }
+                            List _comments = snapshot
+                                .data!['taskComments'].reversed
+                                .toList();
                             return ListView.separated(
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               itemCount: snapshot.data!['taskComments'].length,
-                              itemBuilder: (context, index) {
-                                return CommentWidget(
-                                  commentId: snapshot.data!['taskComments']
-                                      [index]['commentId'],
-                                  commenterId: snapshot.data!['taskComments']
-                                      [index]['userId'],
-                                  commenterName: snapshot.data!['taskComments']
-                                      [index]['name'],
-                                  commentBody: snapshot.data!['taskComments']
-                                      [index]['commentBody'],
-                                  commenterImageUrl:
-                                      snapshot.data!['taskComments'][index]
-                                          ['userImageUrl'],
-                                );
-                              },
                               separatorBuilder: (context, index) {
                                 return const Divider(
                                   thickness: 1,
+                                );
+                              },
+                              itemBuilder: (context, index) {
+                                return CommentWidget(
+                                  commentId: _comments[index]['commentId'],
+                                  commenterId: _comments[index]['userId'],
+                                  commenterName: _comments[index]['name'],
+                                  commentBody: _comments[index]['commentBody'],
+                                  commenterImageUrl: _comments[index]
+                                      ['userImageUrl'],
                                 );
                               },
                             );

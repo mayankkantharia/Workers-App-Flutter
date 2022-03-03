@@ -62,12 +62,16 @@ class TaskWidget extends StatelessWidget {
                         context: context,
                       );
                     }
-                  } catch (error) {
+                  } on FirebaseException catch (error) {
                     Navigator.canPop(context) ? Navigator.pop(context) : null;
                     GlobalMethods.showErrorDialog(
-                      error: "This task can't be deleted.",
+                      error: error.message.toString(),
                       context: context,
                     );
+                    // GlobalMethods.showErrorDialog(
+                    //   error: "This task can't be deleted.",
+                    //   context: context,
+                    // );
                   }
                 },
                 child: Row(

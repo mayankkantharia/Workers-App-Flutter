@@ -66,9 +66,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
         await _auth.sendPasswordResetEmail(email: _emailTextController.text);
         _emailTextController.clear();
         Fluttertoast.showToast(msg: 'Reset mail sent successfully.');
-      } catch (error) {
+      } on FirebaseAuthException catch (error) {
         GlobalMethods.showErrorDialog(
-          error: error.toString(),
+          error: error.message.toString(),
           context: context,
         );
       }
@@ -94,69 +94,72 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
           ),
           SafeArea(
             child: FadeInUp(
-              child: ListView(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  (size.height * 0.1).heightBox,
-                  const Text(
-                    'Forgot Password',
-                    style: TextStyle(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                    ),
-                  ),
-                  40.heightBox,
-                  const Text(
-                    'Email Address',
-                    style: TextStyle(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  10.heightBox,
-                  Form(
-                    key: _forgotPasswordFormKey,
-                    child: TextFormField(
-                      focusNode: _emailFocusNode,
-                      textInputAction: TextInputAction.done,
-                      onEditingComplete: () => _forgotPassword(),
-                      keyboardType: TextInputType.emailAddress,
-                      controller: _emailTextController,
-                      validator: (value) {
-                        if (value!.isEmpty || !value.contains("@")) {
-                          return "Please enter a valid Email address";
-                        } else {
-                          return null;
-                        }
-                      },
-                      style: const TextStyle(
-                        color: black,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Forgot Password',
+                      style: TextStyle(
+                        color: white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
                       ),
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
-                        hintStyle: TextStyle(
-                          color: Colors.black54,
+                    ),
+                    40.heightBox,
+                    const Text(
+                      'Email Address',
+                      style: TextStyle(
+                        color: white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    10.heightBox,
+                    Form(
+                      key: _forgotPasswordFormKey,
+                      child: TextFormField(
+                        focusNode: _emailFocusNode,
+                        textInputAction: TextInputAction.done,
+                        onEditingComplete: () => _forgotPassword(),
+                        keyboardType: TextInputType.emailAddress,
+                        controller: _emailTextController,
+                        validator: (value) {
+                          if (value!.isEmpty || !value.contains("@")) {
+                            return "Please enter a valid Email address";
+                          } else {
+                            return null;
+                          }
+                        },
+                        style: const TextStyle(
+                          color: black,
                         ),
-                        filled: true,
-                        isDense: true,
-                        fillColor: white,
-                        enabledBorder: myEnabeledBorder,
-                        focusedBorder: myFocusedBorder,
-                        errorBorder: myErrorBorder,
-                        focusedErrorBorder: myFocusedErrorBorder,
+                        decoration: const InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(
+                            color: Colors.black54,
+                          ),
+                          filled: true,
+                          isDense: true,
+                          fillColor: white,
+                          enabledBorder: myEnabeledBorder,
+                          focusedBorder: myFocusedBorder,
+                          errorBorder: myErrorBorder,
+                          focusedErrorBorder: myFocusedErrorBorder,
+                        ),
                       ),
                     ),
-                  ),
-                  _isLoading
-                      ? const CircularProgressIndicator().centered().p(20)
-                      : MyMaterialButton(
-                          text: 'Reset Now',
-                          onPressed: _forgotPassword,
-                        ).py(20),
-                ],
-              ),
+                    _isLoading
+                        ? const CircularProgressIndicator().centered().p(20)
+                        : MyMaterialButton(
+                            text: 'Reset Now',
+                            onPressed: _forgotPassword,
+                          ).py(20),
+                  ],
+                ),
+              ).centered(),
             ),
           ),
         ],

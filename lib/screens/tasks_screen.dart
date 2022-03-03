@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:work_app/constants/constants.dart';
+import 'package:work_app/widgets/common_widgets.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/task_widget.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -52,56 +53,57 @@ class _TasksScreenState extends State<TasksScreen> {
             ).centered();
           } else if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.docs.isNotEmpty) {
-              return ListView.builder(
-                itemCount: snapshot.data!.docs.length,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (BuildContext context, int index) {
-                  _myTaskWidget() {
-                    return TaskWidget(
-                      taskId: snapshot.data!.docs[index]['taskId'],
-                      taskTitle: snapshot.data!.docs[index]['taskTitle'],
-                      taskCategory: snapshot.data!.docs[index]['taskCategory'],
-                      taskDescription: snapshot.data!.docs[index]
-                          ['taskDescription'],
-                      taskUploadedBy: snapshot.data!.docs[index]['uploadedBy'],
-                      isDone: snapshot.data!.docs[index]['isDone'],
-                      deadlineDate: snapshot.data!.docs[index]['deadlineDate'],
-                      deadlineDateTimestamp: snapshot.data!.docs[index]
-                          ['deadlineDateTimeStamp'],
-                      postedDateTimestamp: snapshot.data!.docs[index]
-                          ['createdAt'],
-                    ).pOnly(
-                      top: index == 0 ? 6 : 0,
-                      bottom: index == snapshot.data!.docs.length - 1 ? 6 : 0,
+              List _allCategory = [];
+              List _selectedCategory = [];
+              for (int i = 0; i < snapshot.data!.docs.length; i++) {
+                if (filterState == snapshot.data!.docs[i]['taskCategory']) {
+                  _selectedCategory.add(snapshot.data!.docs[i]);
+                } else if (filterState == 'All') {
+                  _allCategory.add(snapshot.data!.docs[i]);
+                }
+              }
+              if (filterState == 'All') {
+                _selectedCategory = _allCategory;
+              }
+              return _selectedCategory.isNotEmpty
+                  ? ListView.builder(
+                      physics: const BouncingScrollPhysics(),
+                      itemCount: _selectedCategory.length,
+                      itemBuilder: (context, index) {
+                        return TaskWidget(
+                          taskId: _selectedCategory[index]['taskId'],
+                          taskTitle: _selectedCategory[index]['taskTitle'],
+                          taskCategory: _selectedCategory[index]
+                              ['taskCategory'],
+                          taskDescription: _selectedCategory[index]
+                              ['taskDescription'],
+                          taskUploadedBy: _selectedCategory[index]
+                              ['uploadedBy'],
+                          isDone: _selectedCategory[index]['isDone'],
+                          deadlineDate: _selectedCategory[index]
+                              ['deadlineDate'],
+                          deadlineDateTimestamp: _selectedCategory[index]
+                              ['deadlineDateTimeStamp'],
+                          postedDateTimestamp: _selectedCategory[index]
+                              ['createdAt'],
+                        ).pOnly(
+                          bottom:
+                              index == snapshot.data!.docs.length - 1 ? 20 : 0,
+                        );
+                      },
+                    )
+                  : messageWidget(
+                      message: 'There are no tasks for this Category',
                     );
-                  }
-
-                  return filterState == 'All'
-                      ? _myTaskWidget()
-                      : filterState ==
-                              snapshot.data!.docs[index]['taskCategory']
-                                  .toString()
-                          ? _myTaskWidget()
-                          : 0.heightBox;
-                },
-              );
             } else {
-              return const Text(
-                'There are no tasks.',
-                style: TextStyle(
-                  fontSize: 18,
-                  color: darkBlue,
-                ),
-              ).centered();
+              return messageWidget(
+                message: 'There are no tasks.',
+              );
             }
           }
-          return const Text(
-            'Something went wrong.',
-            style: TextStyle(
-              fontSize: 18,
-              color: darkBlue,
-            ),
-          ).centered();
+          return messageWidget(
+            message: 'Something went wrong.',
+          );
         },
       ),
     );
@@ -120,7 +122,7 @@ class _TasksScreenState extends State<TasksScreen> {
             style: myHeadingTextStyle,
           ),
           content: SizedBox(
-            width: size.width * 0.9,
+            width: size.width,
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               itemCount: taskCategoryList.length,

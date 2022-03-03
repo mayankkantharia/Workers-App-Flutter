@@ -58,10 +58,8 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void dispose() {
     _animationController.dispose();
-
     _emailTextController.dispose();
     _passwordTextController.dispose();
-
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
@@ -79,12 +77,12 @@ class _LoginScreenState extends State<LoginScreen>
           password: _passwordTextController.text,
         );
         navigateWithReplacement(context, const UserState());
-      } catch (error) {
+      } on FirebaseAuthException catch (error) {
         setState(() {
           _isLoading = false;
         });
         GlobalMethods.showErrorDialog(
-          error: error.toString(),
+          error: error.message.toString(),
           context: context,
         );
       }
@@ -96,7 +94,6 @@ class _LoginScreenState extends State<LoginScreen>
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: black,
       body: Stack(
@@ -122,155 +119,158 @@ class _LoginScreenState extends State<LoginScreen>
           // ),
           SafeArea(
             child: FadeInUp(
-              child: ListView(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                children: [
-                  (size.height * 0.1).heightBox,
-                  const Text(
-                    'Login',
-                    style: TextStyle(
-                      color: white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Login',
+                      style: TextStyle(
+                        color: white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 30,
+                      ),
                     ),
-                  ),
-                  10.heightBox,
-                  RichText(
-                    text: TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: "Don't have an account?",
+                    10.heightBox,
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          const TextSpan(
+                            text: "Don't have an account?",
+                            style: TextStyle(
+                              color: white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const TextSpan(text: '    '),
+                          TextSpan(
+                            text: "Register",
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => navigateWithoutReplacement(
+                                    context,
+                                    const RegisterScreen(),
+                                  ),
+                            style: TextStyle(
+                              decoration: TextDecoration.underline,
+                              color: blue[300],
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    40.heightBox,
+                    Form(
+                      key: _loginFormKey,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            focusNode: _emailFocusNode,
+                            textInputAction: TextInputAction.next,
+                            onEditingComplete: () => FocusScope.of(context)
+                                .requestFocus(_passwordFocusNode),
+                            keyboardType: TextInputType.emailAddress,
+                            controller: _emailTextController,
+                            style: myTextFormFieldStyle,
+                            decoration: const InputDecoration(
+                              hintText: 'Email',
+                              hintStyle: myHintStyle,
+                              enabledBorder: myUnderlineInputBorder,
+                              focusedBorder: myUnderlineInputBorder,
+                              errorBorder: myErrorUnderlineInputBorder,
+                              focusedErrorBorder: myErrorUnderlineInputBorder,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty || !value.contains("@")) {
+                                return "Please enter a valid Email address";
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+                          20.heightBox,
+                          TextFormField(
+                            focusNode: _passwordFocusNode,
+                            textInputAction: TextInputAction.done,
+                            onEditingComplete: () => _submitFormLogin(),
+                            obscureText: _obscureText,
+                            keyboardType: TextInputType.visiblePassword,
+                            controller: _passwordTextController,
+                            style: myTextFormFieldStyle,
+                            decoration: InputDecoration(
+                              hintText: 'Password',
+                              hintStyle: myHintStyle,
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  });
+                                },
+                                icon: Icon(
+                                  _obscureText
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: white,
+                                ),
+                              ),
+                              enabledBorder: myUnderlineInputBorder,
+                              focusedBorder: myUnderlineInputBorder,
+                              errorBorder: myErrorUnderlineInputBorder,
+                              focusedErrorBorder: myErrorUnderlineInputBorder,
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty || value.length < 7) {
+                                return "Please enter a valid password";
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    15.heightBox,
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: TextButton(
+                        onPressed: () => navigateWithoutReplacement(
+                          context,
+                          const ForgotPasswordScreen(),
+                        ),
+                        child: const Text(
+                          'Forgot Password?',
                           style: TextStyle(
                             color: white,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const TextSpan(text: '    '),
-                        TextSpan(
-                          text: "Register",
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () => navigateWithoutReplacement(
-                                  context,
-                                  const RegisterScreen(),
-                                ),
-                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
                             decoration: TextDecoration.underline,
-                            color: blue[300],
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  40.heightBox,
-                  Form(
-                    key: _loginFormKey,
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          focusNode: _emailFocusNode,
-                          textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context)
-                              .requestFocus(_passwordFocusNode),
-                          keyboardType: TextInputType.emailAddress,
-                          controller: _emailTextController,
-                          style: myTextFormFieldStyle,
-                          decoration: const InputDecoration(
-                            hintText: 'Email',
-                            hintStyle: myHintStyle,
-                            enabledBorder: myUnderlineInputBorder,
-                            focusedBorder: myUnderlineInputBorder,
-                            errorBorder: myErrorUnderlineInputBorder,
-                            focusedErrorBorder: myErrorUnderlineInputBorder,
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty || !value.contains("@")) {
-                              return "Please enter a valid Email address";
-                            } else {
-                              return null;
-                            }
-                          },
-                        ),
-                        20.heightBox,
-                        TextFormField(
-                          focusNode: _passwordFocusNode,
-                          textInputAction: TextInputAction.done,
-                          onEditingComplete: () => _submitFormLogin(),
-                          obscureText: _obscureText,
-                          keyboardType: TextInputType.visiblePassword,
-                          controller: _passwordTextController,
-                          style: myTextFormFieldStyle,
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            hintStyle: myHintStyle,
-                            suffixIcon: IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  _obscureText = !_obscureText;
-                                });
-                              },
-                              icon: Icon(
-                                _obscureText
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: white,
+                    _isLoading
+                        ? Center(
+                            child: SizedBox(
+                              height: 50,
+                              width: 50,
+                              child: CircularProgressIndicator(
+                                color: pink[700]!,
                               ),
-                            ),
-                            enabledBorder: myUnderlineInputBorder,
-                            focusedBorder: myUnderlineInputBorder,
-                            errorBorder: myErrorUnderlineInputBorder,
-                            focusedErrorBorder: myErrorUnderlineInputBorder,
-                          ),
-                          validator: (value) {
-                            if (value!.isEmpty || value.length < 7) {
-                              return "Please enter a valid password";
-                            } else {
-                              return null;
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  15.heightBox,
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: TextButton(
-                      onPressed: () => navigateWithoutReplacement(
-                        context,
-                        const ForgotPasswordScreen(),
-                      ),
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          color: white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          fontStyle: FontStyle.italic,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ),
-                  _isLoading
-                      ? Center(
-                          child: SizedBox(
-                            height: 50,
-                            width: 50,
-                            child: CircularProgressIndicator(
-                              color: pink[700]!,
-                            ),
-                          ).py(40),
-                        )
-                      : MyMaterialButton(
-                          text: 'Login',
-                          onPressed: _submitFormLogin,
-                          icon: Icons.login,
-                        ).py(50),
-                ],
-              ),
+                            ).py(40),
+                          )
+                        : MyMaterialButton(
+                            text: 'Login',
+                            onPressed: _submitFormLogin,
+                            icon: Icons.login,
+                          ).py(50),
+                  ],
+                ),
+              ).centered(),
             ),
           ),
         ],
