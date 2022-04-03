@@ -535,7 +535,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   }
 
   void _cropImage(filePath) async {
-    File? croppedImage = await ImageCropper.cropImage(
+    File? croppedImage = await ImageCropper().cropImage(
       sourcePath: filePath,
       maxHeight: 1080,
       maxWidth: 1080,
