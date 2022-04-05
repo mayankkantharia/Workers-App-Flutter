@@ -29,7 +29,7 @@ class _AllWorkersWidgetState extends State<AllWorkersWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 5,
+      elevation: 2,
       color: white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),

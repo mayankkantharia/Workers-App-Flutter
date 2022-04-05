@@ -24,7 +24,7 @@ class MyMaterialButton extends StatelessWidget {
       onPressed: () {
         onPressed.call();
       },
-      elevation: 8,
+      elevation: 2,
       color: color ?? pink[700],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),

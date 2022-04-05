@@ -16,6 +16,7 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
+        backgroundColor: white,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -74,7 +75,7 @@ class DrawerWidget extends StatelessWidget {
               icon: Icons.account_circle_outlined,
             ),
             _listTile(
-              label: 'Registered Workers',
+              label: 'All Workers',
               onTap: () {
                 navigateWithReplacement(context, const AllWorkersScreen());
               },

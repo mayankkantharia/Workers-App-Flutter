@@ -18,15 +18,8 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const DrawerWidget(),
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: darkBlue),
-        backgroundColor: ghostWhite,
-        title: const Text(
-          'Registered Workers',
-          style: myHeadingTextStyle,
-        ),
+      appBar: myAppBar(
+        title: 'All Workers',
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('users').snapshots(),
@@ -51,6 +44,7 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
                     userName: snapshot.data!.docs[index]['name'],
                   ).pOnly(
                     bottom: index == snapshot.data!.docs.length - 1 ? 30 : 0,
+                    top: index == 0 ? 10 : 0,
                   );
                 },
               );

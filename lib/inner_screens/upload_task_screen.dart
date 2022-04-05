@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:work_app/services/global_methods.dart';
+import 'package:work_app/widgets/common_widgets.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 import 'package:uuid/uuid.dart';
@@ -99,15 +100,8 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: darkBlue),
-        backgroundColor: ghostWhite,
-        title: const Text(
-          'Upload Task',
-          style: myHeadingTextStyle,
-        ),
+      appBar: myAppBar(
+        title: 'Upload Task',
       ),
       drawer: const DrawerWidget(),
       body: SafeArea(
@@ -117,7 +111,7 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
-            elevation: 3,
+            elevation: 2,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

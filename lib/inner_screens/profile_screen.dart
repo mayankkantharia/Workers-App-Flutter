@@ -6,6 +6,7 @@ import 'package:work_app/constants/constants.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:work_app/services/global_methods.dart';
+import 'package:work_app/widgets/common_widgets.dart';
 import 'package:work_app/widgets/drawer_widget.dart';
 import 'package:work_app/widgets/my_buttons.dart';
 
@@ -142,22 +143,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           )
         : Scaffold(
             drawer: const DrawerWidget(),
-            appBar: AppBar(
-              elevation: 0,
-              centerTitle: true,
-              iconTheme: const IconThemeData(color: darkBlue),
-              backgroundColor: ghostWhite,
-              title: const Text(
-                'Profile',
-                style: myHeadingTextStyle,
-              ),
+            appBar: myAppBar(
+              title: 'Profile',
             ),
             body: SafeArea(
               child: SingleChildScrollView(
                 child: Stack(
                   children: [
                     Card(
-                      elevation: 5,
+                      elevation: 2,
                       margin: const EdgeInsets.all(30),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),

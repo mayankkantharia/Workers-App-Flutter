@@ -12,3 +12,16 @@ messageWidget({required String message}) {
     ),
   ).px(10).centered();
 }
+
+myAppBar({required String title}) {
+  return AppBar(
+    elevation: 1,
+    centerTitle: true,
+    iconTheme: const IconThemeData(color: white),
+    backgroundColor: pink.shade700,
+    title: Text(
+      title,
+      style: myAppBarHeadingTextStyle,
+    ),
+  );
+}

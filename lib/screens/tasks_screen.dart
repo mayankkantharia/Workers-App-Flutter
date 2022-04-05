@@ -21,13 +21,13 @@ class _TasksScreenState extends State<TasksScreen> {
     return Scaffold(
       drawer: const DrawerWidget(),
       appBar: AppBar(
-        elevation: 0,
+        elevation: 1,
         centerTitle: true,
-        iconTheme: const IconThemeData(color: darkBlue),
-        backgroundColor: ghostWhite,
+        iconTheme: const IconThemeData(color: white),
+        backgroundColor: pink.shade700,
         title: const Text(
           'Tasks',
-          style: myHeadingTextStyle,
+          style: myAppBarHeadingTextStyle,
         ),
         actions: [
           IconButton(
@@ -36,7 +36,7 @@ class _TasksScreenState extends State<TasksScreen> {
             },
             icon: const Icon(
               Icons.filter_list_outlined,
-              color: black,
+              color: white,
             ),
           ),
         ],
@@ -89,6 +89,7 @@ class _TasksScreenState extends State<TasksScreen> {
                         ).pOnly(
                           bottom:
                               index == snapshot.data!.docs.length - 1 ? 20 : 0,
+                          top: index == 0 ? 10 : 0,
                         );
                       },
                     )
@@ -137,9 +138,9 @@ class _TasksScreenState extends State<TasksScreen> {
                   },
                   child: Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.check_circle_outline,
-                        color: red.shade200,
+                        color: pink,
                       ),
                       Text(
                         taskCategoryList[index],

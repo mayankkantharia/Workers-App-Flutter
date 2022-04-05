@@ -24,7 +24,7 @@ const myDialogTextStyle = TextStyle(
 
 const myAlertTextButtonTextStyle = TextStyle(
   color: red,
-  fontSize: 15,
+  fontSize: 17,
 );
 final myInputHeadingTextStyle = TextStyle(
   color: pink.shade800,
@@ -34,6 +34,10 @@ final myInputHeadingTextStyle = TextStyle(
 const myHeadingTextStyle = TextStyle(
   fontSize: 20,
   color: pink,
+);
+const myAppBarHeadingTextStyle = TextStyle(
+  fontSize: 20,
+  color: white,
 );
 const myHintStyle = TextStyle(
   color: Colors.white60,

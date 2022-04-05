@@ -193,10 +193,10 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: 0,
+        elevation: 1,
         centerTitle: true,
         iconTheme: const IconThemeData(color: darkBlue),
-        backgroundColor: ghostWhite,
+        backgroundColor: pink.shade700,
         leadingWidth: 80,
         automaticallyImplyLeading: false,
         leading: TextButton(
@@ -205,12 +205,12 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           },
           child: const Text(
             'Back',
-            style: myHeadingTextStyle,
+            style: myAppBarHeadingTextStyle,
           ),
         ),
         title: const Text(
           'Task Details',
-          style: myHeadingTextStyle,
+          style: myAppBarHeadingTextStyle,
         ),
       ),
       body: _isLoading
@@ -228,7 +228,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                     ),
                   ).py(10),
                   Card(
-                    elevation: 5,
+                    elevation: 2,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14),
                     ),

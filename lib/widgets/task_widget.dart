@@ -97,7 +97,7 @@ class TaskWidget extends StatelessWidget {
     }
 
     return Card(
-      elevation: 5,
+      elevation: 2,
       color: white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
