@@ -18,10 +18,10 @@ class ProfileScreen extends StatefulWidget {
   final String userID;
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final _titleTextStyle = const TextStyle(
     fontSize: 18,
     fontStyle: FontStyle.normal,
@@ -50,7 +50,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void getUserData() async {
     try {
       _isLoading = true;
-      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final FirebaseAuth auth = FirebaseAuth.instance;
       final DocumentSnapshot userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(widget.userID)
@@ -67,10 +67,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           joinedAt = '${joinedDate.year}-${joinedDate.month}-${joinedDate.day}';
           _isLoading = false;
         });
-        User? user = _auth.currentUser;
-        final _uid = user!.uid;
+        User? user = auth.currentUser;
+        final uid = user!.uid;
         setState(() {
-          isSameUser = _uid == widget.userID;
+          isSameUser = uid == widget.userID;
         });
       }
     } catch (error) {
@@ -82,12 +82,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget _logoutButton() {
+    Widget logoutButton() {
       return Column(
         children: [
           MyMaterialButton(
             text: 'Logout',
-            icon: FontAwesomeIcons.signOutAlt,
+            icon: FontAwesomeIcons.rightFromBracket,
             onPressed: () {
               GlobalMethods.logout(context);
             },
@@ -98,7 +98,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    Widget _contactWidget() {
+    Widget contactWidget() {
       return Column(
         children: [
           const Divider(thickness: 1),
@@ -109,7 +109,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 color: green,
                 icon: FontAwesomeIcons.whatsapp,
                 onPressed: () {
-                  GlobalMethods.openWhatsappChat(phoneNumber: phoneNumber);
+                  // GlobalMethods.openWhatsappChat(phoneNumber: phoneNumber);
                 },
               ),
               _contactBy(
@@ -190,8 +190,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             content: phoneNumber,
                           ).p(4),
                           15.heightBox,
-                          isSameUser ? 0.heightBox : _contactWidget(),
-                          isSameUser ? _logoutButton() : 0.heightBox,
+                          isSameUser ? 0.heightBox : contactWidget(),
+                          isSameUser ? logoutButton() : 0.heightBox,
                         ],
                       ).p(15),
                     ),

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -34,9 +36,9 @@ class TaskWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    _deleteDialog() {
+    deleteDialog() {
       User? user = _auth.currentUser;
-      final _uid = user!.uid;
+      final uid = user!.uid;
       showDialog(
         context: context,
         builder: (context) {
@@ -45,7 +47,7 @@ class TaskWidget extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   try {
-                    if (taskUploadedBy == _uid) {
+                    if (taskUploadedBy == uid) {
                       FirebaseFirestore.instance
                           .collection('tasks')
                           .doc(taskId)
@@ -53,6 +55,8 @@ class TaskWidget extends StatelessWidget {
                       await Fluttertoast.showToast(
                         msg: 'The task has been deleted.',
                         fontSize: 16.0,
+                        backgroundColor: pink,
+                        gravity: ToastGravity.CENTER,
                       );
                       Navigator.canPop(context) ? Navigator.pop(context) : null;
                     } else {
@@ -120,7 +124,7 @@ class TaskWidget extends StatelessWidget {
             ),
           );
         },
-        onLongPress: _deleteDialog,
+        onLongPress: deleteDialog,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 10,

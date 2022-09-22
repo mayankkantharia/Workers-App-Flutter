@@ -10,10 +10,10 @@ import 'package:velocity_x/velocity_x.dart';
 class AllWorkersScreen extends StatefulWidget {
   const AllWorkersScreen({Key? key}) : super(key: key);
   @override
-  _AllWorkersScreenState createState() => _AllWorkersScreenState();
+  AllWorkersScreenState createState() => AllWorkersScreenState();
 }
 
-class _AllWorkersScreenState extends State<AllWorkersScreen> {
+class AllWorkersScreenState extends State<AllWorkersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

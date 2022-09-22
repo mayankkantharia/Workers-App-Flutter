@@ -10,10 +10,10 @@ import 'package:animate_do/animate_do.dart';
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({Key? key}) : super(key: key);
   @override
-  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
+  ForgotPasswordScreenState createState() => ForgotPasswordScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
+class ForgotPasswordScreenState extends State<ForgotPasswordScreen>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -61,11 +61,16 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen>
       setState(() {
         _isLoading = true;
       });
-      final FirebaseAuth _auth = FirebaseAuth.instance;
+      final FirebaseAuth auth = FirebaseAuth.instance;
       try {
-        await _auth.sendPasswordResetEmail(email: _emailTextController.text);
+        await auth.sendPasswordResetEmail(email: _emailTextController.text);
         _emailTextController.clear();
-        Fluttertoast.showToast(msg: 'Reset mail sent successfully.');
+        Fluttertoast.showToast(
+          msg: 'Reset mail sent successfully.',
+          backgroundColor: pink,
+          fontSize: 16.0,
+          gravity: ToastGravity.CENTER,
+        );
       } on FirebaseAuthException catch (error) {
         GlobalMethods.showErrorDialog(
           error: error.message.toString(),

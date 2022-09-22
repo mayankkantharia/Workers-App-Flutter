@@ -17,10 +17,10 @@ import 'package:firebase_storage/firebase_storage.dart';
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
   @override
-  _RegisterScreenState createState() => _RegisterScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen>
+class RegisterScreenState extends State<RegisterScreen>
     with TickerProviderStateMixin {
   late Animation<double> _animation;
   late AnimationController _animationController;
@@ -37,7 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen>
   final FocusNode _phoneFocusNode = FocusNode();
   final _signUpFormKey = GlobalKey<FormState>();
 
-  File? imageFile;
+  CroppedFile? imageFile;
   bool _obscureText = true;
   bool _isLoading = false;
   late String imageUrl;
@@ -126,16 +126,16 @@ class _RegisterScreenState extends State<RegisterScreen>
             password: _passwordTextController.text,
           );
           final User? user = _auth.currentUser;
-          final _uid = user!.uid;
+          final uid = user!.uid;
           final ref = FirebaseStorage.instance
               .ref()
               .child('userImages')
-              .child(_uid + '.jpg');
-          await ref.putFile(imageFile!);
+              .child('$uid.jpg');
+          await ref.putFile(File(imageFile!.path));
           imageUrl = await ref.getDownloadURL();
-          FirebaseFirestore.instance.collection('users').doc(_uid).set(
+          FirebaseFirestore.instance.collection('users').doc(uid).set(
             {
-              'id': _uid,
+              'id': uid,
               'name': _fullNameTextController.text,
               'email': _emailTextController.text,
               'userImage': imageUrl,
@@ -144,6 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen>
               'createdAt': Timestamp.now(),
             },
           );
+          if (!mounted) return;
           Navigator.canPop(context) ? Navigator.pop(context) : null;
         } on FirebaseAuthException catch (error) {
           setState(() {
@@ -253,7 +254,7 @@ class _RegisterScreenState extends State<RegisterScreen>
                                             fit: BoxFit.fill,
                                           )
                                         : Image.file(
-                                            imageFile!,
+                                            File(imageFile!.path),
                                             fit: BoxFit.cover,
                                           ),
                                   ),
@@ -521,6 +522,7 @@ class _RegisterScreenState extends State<RegisterScreen>
       maxWidth: 1080,
     );
     _cropImage(selectedImage!.path);
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
@@ -531,11 +533,12 @@ class _RegisterScreenState extends State<RegisterScreen>
       maxWidth: 1080,
     );
     _cropImage(selectedImage!.path);
+    if (!mounted) return;
     Navigator.pop(context);
   }
 
   void _cropImage(filePath) async {
-    File? croppedImage = await ImageCropper().cropImage(
+    CroppedFile? croppedImage = await ImageCropper().cropImage(
       sourcePath: filePath,
       maxHeight: 1080,
       maxWidth: 1080,

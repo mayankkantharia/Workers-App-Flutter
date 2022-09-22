@@ -9,33 +9,36 @@ import 'package:work_app/helpers/user_state.dart';
 class GlobalMethods {
   static void mailTo({required email}) async {
     var mailUrl = 'mailto:$email';
-    if (await canLaunch(mailUrl)) {
-      await launch(mailUrl);
+    var url = Uri.parse(mailUrl);
+    if (await launchUrl(url)) {
+      await launchUrl(url);
     } else {
       throw 'Error Occured';
     }
   }
 
-  static void openWhatsappChat({required phoneNumber}) async {
-    var url = 'https://wa.me/+91$phoneNumber?text=HelloWorld';
-    if (await canLaunch(url)) {
-      await launch(url);
-    } else {
-      throw 'Error Occured';
-    }
-  }
+  // static void openWhatsappChat({required phoneNumber}) async {
+  //   var whatsappUrl = 'https://wa.me/+91$phoneNumber';
+  //   var url = Uri.parse(whatsappUrl);
+  //   if (await launchUrl(url)) {
+  //     await launchUrl(url);
+  //   } else {
+  //     throw 'Error Occured';
+  //   }
+  // }
 
   static void callPhoneNumber({required phoneNumber}) async {
     var phoneUrl = 'tel://+91$phoneNumber';
-    if (await canLaunch(phoneUrl)) {
-      await launch(phoneUrl);
+    var url = Uri.parse(phoneUrl);
+    if (await launchUrl(url)) {
+      await launchUrl(url);
     } else {
       throw 'Error Occured';
     }
   }
 
   static void logout(BuildContext context) {
-    final FirebaseAuth _auth = FirebaseAuth.instance;
+    final FirebaseAuth auth = FirebaseAuth.instance;
     showDialog(
       context: context,
       builder: (context) {
@@ -75,7 +78,7 @@ class GlobalMethods {
             ),
             TextButton(
               onPressed: () {
-                _auth.signOut();
+                auth.signOut();
                 Navigator.canPop(context) ? Navigator.pop(context) : null;
                 navigateWithReplacement(context, const UserState());
               },

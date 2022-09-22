@@ -22,10 +22,10 @@ class AllWorkersWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _AllWorkersWidgetState createState() => _AllWorkersWidgetState();
+  AllWorkersWidgetState createState() => AllWorkersWidgetState();
 }
 
-class _AllWorkersWidgetState extends State<AllWorkersWidget> {
+class AllWorkersWidgetState extends State<AllWorkersWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(

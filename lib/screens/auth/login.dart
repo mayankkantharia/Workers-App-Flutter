@@ -14,10 +14,10 @@ import 'package:animate_do/animate_do.dart';
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  LoginScreenState createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
+class LoginScreenState extends State<LoginScreen>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _animation;
@@ -76,6 +76,7 @@ class _LoginScreenState extends State<LoginScreen>
           email: _emailTextController.text.trim().toLowerCase(),
           password: _passwordTextController.text,
         );
+        if (!mounted) return;
         navigateWithReplacement(context, const UserState());
       } on FirebaseAuthException catch (error) {
         setState(() {

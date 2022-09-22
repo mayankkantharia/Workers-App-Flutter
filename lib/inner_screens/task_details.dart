@@ -34,10 +34,10 @@ class TaskDetailsScreen extends StatefulWidget {
   final bool isDone;
 
   @override
-  _TaskDetailsScreenState createState() => _TaskDetailsScreenState();
+  TaskDetailsScreenState createState() => TaskDetailsScreenState();
 }
 
-class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
+class TaskDetailsScreenState extends State<TaskDetailsScreen> {
   final _textStyle = const TextStyle(
     color: darkBlue,
     fontSize: 13,
@@ -133,14 +133,14 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    void _postComment() async {
+    void postComment() async {
       if (_commentController.text.isEmptyOrNull) {
         GlobalMethods.showErrorDialog(
           error: 'Comment can\'t be empty.',
           context: context,
         );
       } else {
-        final _generatedId = const Uuid().v4();
+        final generatedId = const Uuid().v4();
         await FirebaseFirestore.instance
             .collection('tasks')
             .doc(widget.taskId)
@@ -148,7 +148,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
           'taskComments': FieldValue.arrayUnion([
             {
               'userId': _uid,
-              'commentId': _generatedId,
+              'commentId': generatedId,
               'name': _loggedUserName,
               'userImageUrl': _loggedInUserImageUrl,
               'commentBody': _commentController.text,
@@ -159,6 +159,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
         await Fluttertoast.showToast(
           msg: 'Your comment is added.',
           fontSize: 16.0,
+          backgroundColor: pink,
+          gravity: ToastGravity.CENTER,
         );
         _commentController.clear();
         setState(() {
@@ -167,7 +169,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
       }
     }
 
-    void _isDoneTask({required bool isDone}) async {
+    void isDoneTask({required bool isDone}) async {
       if (_uid == widget.uploadedBy) {
         try {
           FirebaseFirestore.instance
@@ -335,7 +337,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                           children: <Widget>[
                             TextButton(
                               onPressed: () {
-                                _isDoneTask(isDone: true);
+                                isDoneTask(isDone: true);
                               },
                               child: Text(
                                 'Done',
@@ -352,7 +354,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                             40.widthBox,
                             TextButton(
                               onPressed: () {
-                                _isDoneTask(isDone: false);
+                                isDoneTask(isDone: false);
                               },
                               child: Text(
                                 'Not Done',
@@ -406,10 +408,8 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                             color: white,
                                           ),
                                           focusedBorder:
-                                              const OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: pink,
-                                            ),
+                                              myOutlineInputBorderMethod(
+                                            color: pink,
                                           ),
                                         ),
                                       ),
@@ -421,7 +421,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                             text: 'Post',
                                             textSize: 18,
                                             mainAxisSize: MainAxisSize.min,
-                                            onPressed: _postComment,
+                                            onPressed: postComment,
                                           ).centered(),
                                           15.heightBox,
                                           TextButton(
@@ -472,7 +472,7 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                                 );
                               }
                             }
-                            List _comments = snapshot
+                            List comments = snapshot
                                 .data!['taskComments'].reversed
                                 .toList();
                             return ListView.separated(
@@ -486,11 +486,11 @@ class _TaskDetailsScreenState extends State<TaskDetailsScreen> {
                               },
                               itemBuilder: (context, index) {
                                 return CommentWidget(
-                                  commentId: _comments[index]['commentId'],
-                                  commenterId: _comments[index]['userId'],
-                                  commenterName: _comments[index]['name'],
-                                  commentBody: _comments[index]['commentBody'],
-                                  commenterImageUrl: _comments[index]
+                                  commentId: comments[index]['commentId'],
+                                  commenterId: comments[index]['userId'],
+                                  commenterName: comments[index]['name'],
+                                  commentBody: comments[index]['commentBody'],
+                                  commenterImageUrl: comments[index]
                                       ['userImageUrl'],
                                 );
                               },

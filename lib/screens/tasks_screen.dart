@@ -53,38 +53,35 @@ class _TasksScreenState extends State<TasksScreen> {
             ).centered();
           } else if (snapshot.connectionState == ConnectionState.active) {
             if (snapshot.data!.docs.isNotEmpty) {
-              List _allCategory = [];
-              List _selectedCategory = [];
+              List allCategory = [];
+              List selectedCategory = [];
               for (int i = 0; i < snapshot.data!.docs.length; i++) {
                 if (filterState == snapshot.data!.docs[i]['taskCategory']) {
-                  _selectedCategory.add(snapshot.data!.docs[i]);
+                  selectedCategory.add(snapshot.data!.docs[i]);
                 } else if (filterState == 'All') {
-                  _allCategory.add(snapshot.data!.docs[i]);
+                  allCategory.add(snapshot.data!.docs[i]);
                 }
               }
               if (filterState == 'All') {
-                _selectedCategory = _allCategory;
+                selectedCategory = allCategory;
               }
-              return _selectedCategory.isNotEmpty
+              return selectedCategory.isNotEmpty
                   ? ListView.builder(
                       physics: const BouncingScrollPhysics(),
-                      itemCount: _selectedCategory.length,
+                      itemCount: selectedCategory.length,
                       itemBuilder: (context, index) {
                         return TaskWidget(
-                          taskId: _selectedCategory[index]['taskId'],
-                          taskTitle: _selectedCategory[index]['taskTitle'],
-                          taskCategory: _selectedCategory[index]
-                              ['taskCategory'],
-                          taskDescription: _selectedCategory[index]
+                          taskId: selectedCategory[index]['taskId'],
+                          taskTitle: selectedCategory[index]['taskTitle'],
+                          taskCategory: selectedCategory[index]['taskCategory'],
+                          taskDescription: selectedCategory[index]
                               ['taskDescription'],
-                          taskUploadedBy: _selectedCategory[index]
-                              ['uploadedBy'],
-                          isDone: _selectedCategory[index]['isDone'],
-                          deadlineDate: _selectedCategory[index]
-                              ['deadlineDate'],
-                          deadlineDateTimestamp: _selectedCategory[index]
+                          taskUploadedBy: selectedCategory[index]['uploadedBy'],
+                          isDone: selectedCategory[index]['isDone'],
+                          deadlineDate: selectedCategory[index]['deadlineDate'],
+                          deadlineDateTimestamp: selectedCategory[index]
                               ['deadlineDateTimeStamp'],
-                          postedDateTimestamp: _selectedCategory[index]
+                          postedDateTimestamp: selectedCategory[index]
                               ['createdAt'],
                         ).pOnly(
                           bottom:

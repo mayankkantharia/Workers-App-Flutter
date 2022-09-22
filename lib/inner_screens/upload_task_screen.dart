@@ -14,10 +14,10 @@ class UploadTaskScreen extends StatefulWidget {
   const UploadTaskScreen({Key? key}) : super(key: key);
 
   @override
-  _UploadTaskScreenState createState() => _UploadTaskScreenState();
+  UploadTaskScreenState createState() => UploadTaskScreenState();
 }
 
-class _UploadTaskScreenState extends State<UploadTaskScreen> {
+class UploadTaskScreenState extends State<UploadTaskScreen> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _taskCategoryController = TextEditingController(
     text: 'Choose Task Category',
@@ -44,8 +44,8 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
 
   void _uploadTask() async {
     User? user = _auth.currentUser;
-    final _uid = user!.uid;
-    final _taskID = const Uuid().v4();
+    final uid = user!.uid;
+    final taskID = const Uuid().v4();
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       if (_taskDeadlineDateController.text == 'Choose Task Deadline Date' ||
@@ -59,10 +59,10 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
         _isLoading = true;
       });
       try {
-        await FirebaseFirestore.instance.collection('tasks').doc(_taskID).set(
+        await FirebaseFirestore.instance.collection('tasks').doc(taskID).set(
           {
-            'taskId': _taskID,
-            'uploadedBy': _uid,
+            'taskId': taskID,
+            'uploadedBy': uid,
             'taskTitle': _taskTitleController.text,
             'taskDescription': _taskDescriptionController.text,
             'deadlineDate': _taskDeadlineDateController.text,
@@ -76,6 +76,8 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
         await Fluttertoast.showToast(
           msg: 'The task has been uploaded.',
           fontSize: 16.0,
+          backgroundColor: pink,
+          gravity: ToastGravity.CENTER,
         );
         _taskTitleController.clear();
         _taskDescriptionController.clear();
@@ -233,13 +235,13 @@ class _UploadTaskScreenState extends State<UploadTaskScreen> {
             enabledBorder: myUnderlineInputBorderMethod(
               color: ghostWhite,
             ),
-            focusedBorder: myUnderlineInputBorderMethod(
+            focusedBorder: myOutlineInputBorderMethod(
               color: pink,
             ),
-            errorBorder: myErrorUnderlineInputBorderMethod(
+            errorBorder: myErrorOutlineInputBorderMethod(
               color: red,
             ),
-            focusedErrorBorder: myErrorUnderlineInputBorderMethod(
+            focusedErrorBorder: myErrorOutlineInputBorderMethod(
               color: red,
             ),
           ),

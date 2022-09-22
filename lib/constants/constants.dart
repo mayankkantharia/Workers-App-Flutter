@@ -74,6 +74,14 @@ const myUnderlineInputBorder = UnderlineInputBorder(
     color: white,
   ),
 );
+myOutlineInputBorderMethod({required Color color}) {
+  return OutlineInputBorder(
+    borderSide: BorderSide(
+      color: color,
+    ),
+  );
+}
+
 myUnderlineInputBorderMethod({required Color color}) {
   return UnderlineInputBorder(
     borderSide: BorderSide(
@@ -87,7 +95,7 @@ const myErrorUnderlineInputBorder = UnderlineInputBorder(
     color: red,
   ),
 );
-myErrorUnderlineInputBorderMethod({required Color color}) {
+myErrorOutlineInputBorderMethod({required Color color}) {
   return UnderlineInputBorder(
     borderSide: BorderSide(
       color: color,

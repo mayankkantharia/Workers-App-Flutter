@@ -62,8 +62,8 @@ class DrawerWidget extends StatelessWidget {
             _listTile(
               label: 'My Account',
               onTap: () {
-                final FirebaseAuth _auth = FirebaseAuth.instance;
-                final User user = _auth.currentUser!;
+                final FirebaseAuth auth = FirebaseAuth.instance;
+                final User user = auth.currentUser!;
                 final String uid = user.uid;
                 navigateWithReplacement(
                   context,
