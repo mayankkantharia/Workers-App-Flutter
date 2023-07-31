@@ -78,9 +78,9 @@ class TaskWidget extends StatelessWidget {
                     // );
                   }
                 },
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
+                  children: [
                     Icon(
                       Icons.delete,
                       color: red,
